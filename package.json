@@ -1,0 +1,14 @@
+{
+  "name": "Drivo",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/jawadahmad3263/Drivo.git",
+  "author": "jawad ahmad <se.jawadahmad@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}

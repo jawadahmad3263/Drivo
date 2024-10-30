@@ -1,0 +1,162 @@
+{
+  "5000": {
+    "msg": {
+      "EN": "Please Provide email."
+    }
+  },
+  "5001": {
+    "msg": {
+      "EN": "Please provide valid email."
+    }
+  },
+  "5002": {
+    "msg": {
+      "EN": "Please provide phone number."
+    }
+  },
+  "5003": {
+    "msg": {
+      "EN": "Please provide password."
+    }
+  },
+  "5004": {
+    "msg": {
+      "EN": "Please provide valid password."
+    }
+  },
+  "5005": {
+    "msg": {
+      "EN": "Please provide usertype."
+    }
+  },
+  "5006": {
+    "msg": {
+      "EN": "Please provide valid usertype."
+    }
+  },
+  "5007": {
+    "msg": {
+      "EN": "invalid email or password."
+    }
+  },
+  "5008": {
+    "msg": {
+      "EN": "Error occured in user sign in."
+    }
+  },
+  "5009": {
+    "msg": {
+      "EN": "phone number is not valid"
+    }
+  },
+  "5011": {
+    "msg": {
+      "EN": "Error occured in user sign up."
+    }
+  },
+  "5012": {
+    "msg": {
+      "EN": "User already exist on given email."
+    }
+  },
+  "5013": {
+    "msg": {
+      "EN": "Given phone number is already used."
+    }
+  },
+  "5014": {
+    "msg": {
+      "EN": "Your Password is wrong."
+    }
+  },
+  "5015": {
+    "msg": {
+      "EN": "please provide reset password code."
+    }
+  },
+  "5016": {
+    "msg": {
+      "EN": "invalid password reset code."
+    }
+  },
+  "5017": {
+    "msg": {
+      "EN": "Users not found."
+    }
+  },
+  "5018": {
+    "msg": {
+      "EN": "Not authorized to this api."
+    }
+  },
+  "5019": {
+    "msg": {
+      "EN": "Given password reset code is expired."
+    }
+  },
+  "5020": {
+    "msg": {
+      "EN": "please provide reset password code.."
+    }
+  },
+  "5021": {
+    "msg": {
+      "EN": "location not added yet."
+    }
+  },
+  "5022": {
+    "msg": {
+      "EN": "please provide coordinate."
+    }
+  },
+  "5023": {
+    "msg": {
+      "EN": "please provide lat coordinate."
+    }
+  },
+  "5024": {
+    "msg": {
+      "EN": "please provide address words."
+    }
+  },
+  "5025": {
+    "msg": {
+      "EN": "please provide locationId."
+    }
+  },
+  "5026": {
+    "msg": {
+      "EN": "location not found on given id."
+    }
+  },
+  "5027": {
+    "msg": {
+      "EN": "please provide your first name"
+    }
+  },
+  "5028": {
+    "msg": {
+      "EN": "Old Password is wrong."
+    }
+  },
+  "5029": {
+    "msg": {
+      "EN": "Please provide old_password."
+    }
+  },
+  "5030": {
+    "msg": {
+      "EN": "This account does not exists"
+    }
+  },
+  "5031": {
+    "msg": {
+      "EN": "Error sending mail try again"
+    }
+  },
+  "5032": {
+    "msg": {
+      "EN": "please provide user_id"
+    }
+  }
+}

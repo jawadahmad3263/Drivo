@@ -9,5 +9,6 @@ module.exports = {
     DEFAULT_LIMIT: 14,
     DEFAULT_OFFSET: 0,
     DB_HOST:process.env.DB_HOST,
-    DB_NAME: process.env.DB_NAME
+    DB_NAME: process.env.DB_NAME,
+    AUTH_KEY:process.env.AUTH_KEY
 }

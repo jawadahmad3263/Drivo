@@ -1,0 +1,182 @@
+const config = require("../../../../config/config.json");
+     commonHelper = require('../../globals/commonHelper'),
+    commonLib = require('../../globals/global.library'),
+    responseModule = require('../../../../config/response'),
+    usersHelper = require('./helpers/users.helper.js')
+    bcrypt = require('bcryptjs'),
+    _ = require("lodash"),
+    crypto = require('crypto');
+
+let signup = async (req, res, next) => {
+    try {
+            req.body.email = _.trim(req.body.email).toLowerCase();
+            req.body.phone = _.trim(req.body.phone);
+
+    } catch (error) {
+        console.log('error', error)
+        return res.status(403).send({
+            success: 0,
+            message: error,
+            response: 403,
+            data: {},
+        })
+    }
+}
+const login = async (req, res, next) => {
+    const user = await commonHelper.queryRow({
+      model:config.databaseModels.USER,
+      queryObj: {
+        email: _.trim(req.body.email).toLowerCase(),
+        user_type: req.body.user_type ? req.body.user_type : config.userTypes[1]
+      }
+    });
+    if (user) {
+      if (user.deletedAt && user.deletedAt !== null) {
+        return next({ msgCode: 5030, status: 404 });
+      }
+  
+      if (user.account_status === config.accountStatuses[2]) {
+        return next({ msgCode: 5034, status: 403 });
+      }
+  
+      req.user = user;
+  
+      const userProfile = await commonHelper.queryRow({
+        model: config.databaseModels.USER_PROFILE,
+        queryObj: { user_id: user._id }
+      });
+      req.user.userProfile = userProfile || {};
+  
+
+      return bcrypt
+        .compare(req.body.password, user.password)
+        .then((validPass) => {
+          if (validPass) {
+            req.user = user;
+            req.action = "login"
+            next();
+          } else {
+            return next({ msgCode: 5010, status: 403 });
+          }
+        })
+        .catch((err) => {
+          res.send(err);
+        });
+    } else {
+      return next({ msgCode: 5033, status: 403 });
+    }
+  };
+  
+let loginResponse = async (req, res, next) => {
+    try {
+        const token = await commonLib.createAndSaveAuthTokens(
+            req.user,
+            req.deviceToken,
+        )
+        req.user.token = { ...token }
+        return responseModule.successResponse(res, {
+            success: 1,
+            message: `${req.action} successfully`,
+            data: usersHelper.generateUserResponse(req.user) || {},
+        })
+    } catch (error) {
+        console.log('Caught Error is: ' + error)
+        return next({ msgCode: '0018', status: 403 })
+    }
+}
+
+const logout = async (req, res, next) => {
+    try {
+        let queryObj = {
+            user_id: req.user._id,
+            device_token: req.body?.device_token,
+            logout_time: null,
+        }
+
+        await commonHelper
+            .updateRow({
+                model: config.databaseModels.LOGIN,
+                queryObj: queryObj,
+                updatedObj: { logout_time: Date.now() },
+            })
+            .then(() => {
+                responseModule.successResponse(res, {
+                    success: 1,
+                    message: 'User has been logout successfully.',
+                })
+            })
+            .catch((err) => {
+                return next({ msgCode: '0006', status: 403 })
+            })
+    } catch (error) {
+        return next({ msgCode: '0006', status: 403 })
+    }
+}
+let createLoginObject = async (req, res, next) => {
+    const previousLogin = await commonHelper.queryRow({
+      model:config.databaseModels.LOGIN,
+      queryObj: { user_id: req.user._id, device_token: req.body?.device_token }
+    });
+  
+    if (!previousLogin) {
+      let loginObject = {
+        device_token: req.body.device_token,
+        user_id: req.user._id,
+        login_time: Date.now()
+      };
+  
+      return commonHelper
+        .addNew({ model: config.databaseModels.LOGIN, newObj: loginObject })
+        .then(() => {
+          next();
+        })
+        .catch((err) => {
+          res.send(err);
+        });
+    } else {
+      return commonHelper
+        .updateRow({
+          model: config.databaseModels.LOGIN,
+          queryObj: { _id: previousLogin._id },
+          updatedObj: { login_time: Date.now(), logout_time: null }
+        })
+        .then(() => {
+          next();
+        })
+        .catch((err) => {
+          res.send(err);
+        });
+    }
+  };
+  
+let refreshUserToken= async (req, res, next) => {
+    try {
+
+    } catch (error) {
+        return next({ msgCode: '0006', status: 403 })
+    }
+}
+let getMe= async (req, res, next) => {
+    try {
+
+    } catch (error) {
+        return next({ msgCode: '0006', status: 403 })
+    }
+}
+let getUserSuccessResponse = (req, res, next) => {
+    try {
+
+    } catch (error) {
+        return next({ msgCode: '0006', status: 403 })
+    }
+}
+module.exports = {
+    signup,
+    login,
+    loginResponse,
+    logout,
+    refreshUserToken,
+    getMe,
+    getUserSuccessResponse,
+    createLoginObject
+}

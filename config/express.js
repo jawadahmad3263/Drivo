@@ -11,7 +11,7 @@ const express = require("express"),
   _ = require("lodash"),
   cors = require("cors"),
   customValidators = require("./custom_validators.js"),
-//   commonLib = require("../app/modules/globals/global.library"),
+  commonLib = require("../app/modules/globals/global.library"),
   errors_handler = require("./errors_handler");
 const app = express();
 // view engine setup
@@ -22,18 +22,20 @@ app.set("view engine", "jade");
 app.use(express.static(path.join(__dirname, "upload")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
 app.use(
-    expressValidator({
-      errorFormatter: function (param, msg, value) {
-        return {
-          param: param,
-          message: msg,
-          value: value,
-        };
-      },
-      customValidators: customValidators,
-    })
-  );
+  expressValidator({
+    errorFormatter: function (param, msg, value) {
+      return {
+        param: param,
+        message: msg,
+        value: value,
+      };
+    },
+    customValidators: customValidators,
+  })
+);
+
 require("./config")((err) => {
   if (err) {
     winston.error(err);
@@ -138,12 +140,13 @@ require("./config")((err) => {
       next(err);
     });
     app.use(errors_handler);
-
   }
 });
+
 app.get("/testing", (req, res) => {
   res.send({
     status: "Working",
   });
 });
+
 module.exports = app;

@@ -33,17 +33,17 @@ let saltPassword = (password, cb) => {
 
 let validationResponse = (message, req, next) => {
     return req.getValidationResult().then((result) => {
-        if (!result.isEmpty()) {
-            let errors = result.array().map((error) => {
-                return error.message
-            })
-            winston.error(message + errors.join(' && '))
-            return next({ msgCode: errors[0], status: 403 })
-        } else {
-            return next()
-        }
-    })
-}
+      if (!result.isEmpty()) {
+        let errors = result.array().map((error) => {
+          return error.message;
+        });
+        winston.error(message + errors.join(" && "));
+        return next({ msgCode: errors[0], status: 403 });
+      } else {
+        return next();
+      }
+    });
+  };
 
 let createAndSaveAuthTokens = async (user, req) => {
     const payload = {
@@ -53,7 +53,7 @@ let createAndSaveAuthTokens = async (user, req) => {
         iat: Date.now() + (TOKEN_EXPIRY ? parseInt(TOKEN_EXPIRY) : 0),
     }
 
-    const token = jsonWebToken.sign(payload, AUTH_KEY, {
+    const token = jwt.sign(payload, AUTH_KEY, {
         expiresIn: TOKEN_EXPIRY,
     })
 

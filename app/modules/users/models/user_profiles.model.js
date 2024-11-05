@@ -12,6 +12,7 @@ const userProfileData = new mongoose.Schema({
   bio: { type: String, default: null },
   profile_image: { type: String },
   phone: { type: String, default: null },
+  gender:{ type: String}
 });
 
 userProfileData.plugin(mongooseTimestamp);

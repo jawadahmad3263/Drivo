@@ -1,7 +1,8 @@
 {
     "databaseModels": {
         "USER": "user",
-        "USER_PROFILE":"user_profile"
+        "USER_PROFILE":"user_profile",
+        "LOGIN":"login"
     },
     "userTypes": [
         "admin",

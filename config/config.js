@@ -4,7 +4,7 @@ var glob = require("glob"),
   mongoose = require("mongoose"),
   async = require("async"),
   _ = require("lodash"),
-  winston = require("winston"),
+  winston = require("./winston"),
   { DB_HOST, DB_NAME } = require("./constants");
 fs = require("fs");
 
@@ -25,6 +25,7 @@ module.exports = (callback) => {
           : `${DB_HOST}${DB_NAME}`;
         // make connection with mongodb
         if (!mongoose.connection.readyState) {
+         
           winston.info("database uri:", dbURI, dbOptions, process.env.NODE_ENV);
           mongoose.connect(dbURI,dbOptions);
           // autoIncrement.initialize(connection);
@@ -49,6 +50,7 @@ module.exports = (callback) => {
         });
       },
       (modelsCb) => {
+        
         // Load all models
         glob("app/modules/**/*.model.js", (err, files) => {
           if (err) {
@@ -56,6 +58,7 @@ module.exports = (callback) => {
           } else {
             winston.info("models are loading ...");
             files.forEach((file) => {
+              console.log('file', file)
               require(path.join(__dirname, "../", file));
               winston.info(file, "is loaded");
             });

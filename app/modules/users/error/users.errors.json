@@ -44,6 +44,11 @@
       "EN": "Error occured in user sign in."
     }
   },
+  "5010": {
+    "msg": {
+      "EN": "Your Password is wrong."
+    }
+  },
   "5009": {
     "msg": {
       "EN": "phone number is not valid"
@@ -101,7 +106,7 @@
   },
   "5021": {
     "msg": {
-      "EN": "location not added yet."
+      "EN": "please provide refresh token"
     }
   },
   "5022": {
@@ -157,6 +162,16 @@
   "5032": {
     "msg": {
       "EN": "please provide user_id"
+    }
+  },
+  "5033":{
+    "msg":{
+      "EN":"No Account Exists Against The Provided Email and Role"
+    }
+  },
+  "5034":{
+    "msg":{
+      "EN": "Your account has been deactivated. Please contact admin!"
     }
   }
 }

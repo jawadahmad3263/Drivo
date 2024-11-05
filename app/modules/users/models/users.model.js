@@ -4,7 +4,7 @@ const mongoose = require("mongoose"),
   { ADMIN_EMAIL, ADMIN_ACCOUNT_PASS } = require("../../../../config/constants"),
   bcrypt = require("bcryptjs"),
   SALT_WORK_FACTOR = 10,
-  winston = require("winston");
+  winston = require("../../../../config/winston");
   const mongooseTimestamp = require("mongoose-timestamp");
 
   let userData = new schema({

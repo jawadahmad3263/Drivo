@@ -1,4 +1,4 @@
-"use strict";
+"use strict"; // NOSONAR
 const errors = require("./errors");
 
 let successResponse = (res, data) => {
@@ -6,11 +6,11 @@ let successResponse = (res, data) => {
   res.json(data);
 };
 
-let errorResponse = (res, err, msgCode) => {
+let errorResponse = (res, err) => {
   res.json({
     success: 0,
     data: {},
-    message: err || errors[msgCode].msg[res.locals.lang],
+    message: err,
     response: 304
   });
 };
@@ -19,7 +19,7 @@ let errorResponseWithData = (req, res, err, data) => {
   res.status(err.statusCode || 400);
   res.json({
     success: 0,
-    message: errors[msgCode].msg[res.locals.lang],
+    message: errors[err.msgCode].msg.EN,
     response: err.statusCode,
     data: data
   });

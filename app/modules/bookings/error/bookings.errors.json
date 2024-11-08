@@ -1,0 +1,33 @@
+{
+    "4000": {
+      "msg": {
+        "EN": "Please Provide booking id."
+      }
+    },
+    "4001": {
+      "msg": {
+        "EN": "No booking found."
+      }
+    },
+    "4002": {
+      "msg": {
+        "EN": "booking not done try again."
+      }
+    },
+    "4003": {
+      "msg": {
+        "EN": "please provide booking_time."
+      }
+    },
+    "4004": {
+      "msg": {
+        "EN": "please provide booking_date."
+      }
+    },
+    
+    "4005": {
+      "msg": {
+        "EN": "please provide rider id."
+      }
+    }
+}

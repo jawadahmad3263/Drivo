@@ -6,7 +6,10 @@ const config = require("../../../../config/config.json");
     bcrypt = require('bcryptjs'),
     _ = require("lodash"),
     crypto = require('crypto');
-
+    const {
+      DEFAULT_LIMIT,
+      DEFAULT_OFFSET,
+  } = require('../../../../config/constants.js')
 let signup = async (req, res, next) => {
     try {
             req.body.email = _.trim(req.body.email).toLowerCase();
@@ -151,24 +154,95 @@ let createLoginObject = async (req, res, next) => {
   
 let refreshUserToken= async (req, res, next) => {
     try {
-
+        const user = await commonHelper.queryRow({
+          model:config.databaseModels.USER,
+          queryObj:{ refresh_token: req.body.refresh_token }
+        });
+        if (user) {
+          let token = await commonLib.createAndSaveAuthTokens(user, req);
+          let userModified = { ...user, token };
+          return responseModule.successResponse(res, {
+            success: 1,
+            message: "token refreshed successfully",
+            data: usersHelper.generateUserResponse(userModified) || {}
+          });
+        }
+        return next({ msgCode: "0007", status: 404 });
     } catch (error) {
         return next({ msgCode: '0006', status: 403 })
     }
 }
 let getMe= async (req, res, next) => {
     try {
-
+       const userProfile = await commonHelper.queryRow({
+        model:config.databaseModels.USER_PROFILE,
+        queryObj:{ user_id: req.user._id}
+      });
+     req.user.userProfile = userProfile
+     next()
     } catch (error) {
         return next({ msgCode: '0006', status: 403 })
     }
 }
 let getUserSuccessResponse = (req, res, next) => {
     try {
-
+       return responseModule.successResponse(res, {
+            success: 1,
+            message: "fetched successfully",
+            data: usersHelper.generateUserResponse(req.user) || {}
+          });
     } catch (error) {
         return next({ msgCode: '0006', status: 403 })
     }
+}
+let getAllUsers= async (req, res, next) => {
+  try {
+    let {
+      offset,
+      limit,
+      user_type,
+      account_status
+  } = req.query
+    offset = isNaN(offset) ? DEFAULT_OFFSET : Number(offset)
+    limit = isNaN(limit) ? DEFAULT_LIMIT : Number(limit)
+    let queryObj = {};
+    if(user_type) queryObj={...queryObj,user_type:user_type}
+    if(account_status) queryObj={...queryObj,account_status:account_status}
+    let usersCount = await commonHelper.getCount({
+      model:config.databaseModels.USER,
+      queryObj
+    })
+
+  if (!usersCount) return next({ msgCode: 5017, status: 403 })
+  return commonHelper.makeSpecializedQuery({
+    model: config.databaseModels.USER,
+    queryObj: queryObj,
+    offset: offset,
+    limit: limit,
+    selectFields:'_id email email_status user_type account_status super_admin'
+  }).then((userList)=>{
+
+    return responseModule.successResponse(res, {
+      success: 1,
+      message: "Users fetched successfully",
+      offset: offset+userList.length,
+      limit: limit,
+      length: usersCount,
+      data: userList
+    });
+  })
+  } catch (error) {
+    console.log('error', error)
+      return next({ msgCode: '0006', status: 403 })
+  }
+}
+let deleteAccount= async (req, res, next) => {
+  try {
+
+  } catch (error) {
+    console.log('error', error)
+      return next({ msgCode: '0006', status: 403 })
+  }
 }
 module.exports = {
     signup,
@@ -178,5 +252,7 @@ module.exports = {
     refreshUserToken,
     getMe,
     getUserSuccessResponse,
-    createLoginObject
+    createLoginObject,
+    getAllUsers,
+    deleteAccount
 }

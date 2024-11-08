@@ -73,12 +73,15 @@ const softDeleteRow = ({ model, queryObj }) => {
     );
 };
 
-const getCount = ({ model, queryObj }) => {
-  return mongoose
-    .model(model)
-    .countDocuments(queryObj)
-    .then((count) => count)
-    .catch(() => undefined);
+const getCount = async ({ model, queryObj }) => {
+  try {
+    const count = await mongoose
+      .model(model)
+      .countDocuments(queryObj);
+    return count;
+  } catch {
+    return undefined;
+  }
 };
 
 const querySpecificFields = async ({ model, queryObj, selectFields }) => {

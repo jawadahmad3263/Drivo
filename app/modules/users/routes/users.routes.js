@@ -40,5 +40,17 @@ module.exports = (app) => {
         userController.getUserSuccessResponse
       );
     
-    app.post("/logout", authenticateMiddleware, userController.logout);
+    app.post(resources + "/logout", authenticateMiddleware, userController.logout);
+
+    app.get(
+        resources + "/all",
+        authenticateMiddleware,
+        userController.getAllUsers
+      );
+
+    app.post(
+        resources + "/delete",
+        authenticateMiddleware,
+        userController.deleteAccount
+      );
 }

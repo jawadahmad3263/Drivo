@@ -1,0 +1,13 @@
+{
+    "1200": {
+      "msg": {
+        "EN": "Notifications not found"
+      }
+    },
+    "1201": {
+      "msg": {
+        "EN": "Please provide notification_id"
+      }
+    }
+  }
+  

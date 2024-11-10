@@ -7,7 +7,8 @@
     "userTypes": [
         "admin",
         "user",
-        "rider"
+        "rider",
+        "mutual"
     ],
     "accountStatuses": [
         "pending",

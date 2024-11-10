@@ -1,16 +1,25 @@
-const commonLib = require('../../globals/global.library')
-
-let validateSignupParams = (req, res, next) => {
+const commonLib = require('../../globals/global.library'),
+commonHelper = require("../../globals/commonHelper"),
+config = require("../../../../config/config.json"),
+_ = require("lodash");
+let validateSignupParams = async(req, res, next) => {
+   
     if (req.body.email) {
-        req.body.email = req.body.email.toLowerCase()
+        req.body.email = _.trim(req.body.email).toLowerCase()
+    }
+    if (
+        await commonHelper.doesRecordExist({
+            model: config.databaseModels.USER,
+            queryObj: { email: req.body.email,user_type:req.body.user_type},
+        })
+    ) {
+        return next({ msgCode: 5012, status: 409 })
     }
     req.assert('password', 5003).notEmpty()
     if (req.body.password) {
         req.assert('password', 5004).isPasswordValid()
     }
     req.assert('email', 5001).isValidEmail()
-    req.assert('first_name', 5027).notEmpty()
-    req.assert('phone', 5002).notEmpty()
     req.assert('user_type', 5005).notEmpty()
 
     commonLib.validationResponse('User could not be signup', req, next)

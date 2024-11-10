@@ -15,6 +15,7 @@ module.exports = (app) => {
         resources + '/signup',
         userMiddleWare.validateSignupParams,
         userController.signup,
+        userController.createLoginObject,
         userController.loginResponse,
     )
 

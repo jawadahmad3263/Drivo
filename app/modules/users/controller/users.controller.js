@@ -12,8 +12,31 @@ const config = require("../../../../config/config.json");
   } = require('../../../../config/constants.js')
 let signup = async (req, res, next) => {
     try {
-            req.body.email = _.trim(req.body.email).toLowerCase();
-            req.body.phone = _.trim(req.body.phone);
+          return commonHelper
+          .addNew(
+            {
+              model: config.databaseModels.USER,
+              newObj: {
+                email:req.body.email,
+                user_type:req.body.user_type,
+                password:req.body.password
+              }
+            }
+          ).then((user) => {
+            commonHelper.addNew(
+              {
+                model: config.databaseModels.USER_PROFILE,
+                newObj: {
+                  user_id: user._id,
+                }
+              }
+            ).then((userProfile) => {
+              user.userProfile = userProfile;
+              req.user = user;
+              req.action = "Signup"
+              next();
+            });
+          })
 
     } catch (error) {
         console.log('error', error)
@@ -238,7 +261,6 @@ let getAllUsers= async (req, res, next) => {
 }
 let deleteAccount= async (req, res, next) => {
   try {
-    console.log('req.user', req.user)
     return commonHelper
     .softDeleteRow(
       {

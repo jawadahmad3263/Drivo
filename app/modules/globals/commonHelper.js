@@ -114,7 +114,9 @@ function getMinuteDifference(fixedTime, timeToCompare) {
   const minuteDifference = Math.floor(timeDifference / 60000);
   return minuteDifference;
 }
-
+const doesRecordExist = async ({ model, queryObj }) => {
+  return await mongoose.model(model).exists(queryObj) ? true : false;
+};
 module.exports = {
   addNew,
   updateRow,
@@ -132,4 +134,5 @@ module.exports = {
   makeSpecializedQuery,
   makeSpecializedSingleQuery,
   blindUpdate,
+  doesRecordExist
 };

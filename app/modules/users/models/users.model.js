@@ -9,14 +9,14 @@ const mongoose = require("mongoose"),
 
   let userData = new schema({
     email: { type: String},
-    email_status:{ type: String},
-    user_type: { type: String },
+    email_status:{ type: String, default:config.verificationStatus[0]},
+    user_type: { type: String,default: null },
     password: { type: String, required: true },
     refresh_token: { type: String, default: null },
     reset_password_token: { type: String, default: null },
     account_status: { type: String, default: config.accountStatuses[0] },
     deletedAt: { type: Date, default: null },
-    super_admin:{ type: Boolean }
+    super_admin:{ type: Boolean,default:false }
   });
   userData.plugin(mongooseTimestamp);
   userData.index({ email: 1, user_type: 1 }, { unique: true });

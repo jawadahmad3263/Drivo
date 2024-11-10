@@ -61,7 +61,7 @@
   },
   "5012": {
     "msg": {
-      "EN": "User already exist on given email."
+      "EN": "User already exist on given email and user type."
     }
   },
   "5013": {

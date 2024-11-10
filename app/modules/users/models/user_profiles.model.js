@@ -10,9 +10,9 @@ const userProfileData = new mongoose.Schema({
   dob: { type: Date, default: null },
   city: { type: String, default: null },
   bio: { type: String, default: null },
-  profile_image: { type: String },
+  profile_image: { type: String,default: null },
   phone: { type: String, default: null },
-  gender:{ type: String}
+  gender:{ type: String,default: null}
 });
 
 userProfileData.plugin(mongooseTimestamp);

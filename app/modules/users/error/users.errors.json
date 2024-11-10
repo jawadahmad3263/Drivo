@@ -173,5 +173,10 @@
     "msg":{
       "EN": "Your account has been deactivated. Please contact admin!"
     }
+  },
+  "5035":{
+    "msg":{
+      "EN": "Invalid verification code!"
+    }
   }
 }

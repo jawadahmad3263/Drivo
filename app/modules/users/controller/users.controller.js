@@ -2,14 +2,15 @@ const config = require("../../../../config/config.json");
      commonHelper = require('../../globals/commonHelper'),
     commonLib = require('../../globals/global.library'),
     responseModule = require('../../../../config/response'),
-    usersHelper = require('./helpers/users.helper.js')
+    usersHelper = require('./helpers/users.helper.js'),
     bcrypt = require('bcryptjs'),
     _ = require("lodash"),
     crypto = require('crypto');
     const {
       DEFAULT_LIMIT,
       DEFAULT_OFFSET,
-  } = require('../../../../config/constants.js')
+  } = require('../../../../config/constants.js');
+const { sendEmailVerificationCode } = require("../../../../config/email");
 let signup = async (req, res, next) => {
     try {
           return commonHelper
@@ -19,7 +20,8 @@ let signup = async (req, res, next) => {
               newObj: {
                 email:req.body.email,
                 user_type:req.body.user_type,
-                password:req.body.password
+                password:req.body.password,
+                email_verfication_code:crypto.randomInt(10000, 99999)
               }
             }
           ).then((user) => {
@@ -100,9 +102,12 @@ let loginResponse = async (req, res, next) => {
             req.deviceToken,
         )
         req.user.token = { ...token }
+        if(req.action==="Signup"&&req.user.email_verfication_code){
+        sendEmailVerificationCode(req.user.email,req.user.email_verfication_code)
+        }
         return responseModule.successResponse(res, {
             success: 1,
-            message: `${req.action} successfully`,
+            message: `${req.action} successfully! Email verification code is sent to your email`,
             data: usersHelper.generateUserResponse(req.user) || {},
         })
     } catch (error) {
@@ -289,6 +294,33 @@ let deleteAccount= async (req, res, next) => {
       return next({ msgCode: '0013', status: 403 })
   }
 }
+let verifyEmail=async (req, res, next) => {
+  try {
+    const user = await commonHelper.queryRow({
+      model:config.databaseModels.USER,
+      queryObj:{ email_verfication_code:parseInt(req.body.email_verfication_code) }
+    });
+    if(!user)
+    return next({ msgCode: 5035, status: 403 })
+    else{
+     return commonHelper.updateRow(
+        {
+          model: config.databaseModels.USER,
+          queryObj: {_id: user._id},
+          updatedObj: { email_status:config.verificationStatus[1],email_verfication_code:null }
+        }
+      ).then(() => {
+        return responseModule.successResponse(res, {
+          success: 1,
+          message: "Email has been verified successfully."
+        });
+      });
+    }
+  } catch (error) {
+    console.log('error', error)
+      return next({ msgCode: '0014', status: 403 })
+  }
+}
 module.exports = {
     signup,
     login,
@@ -299,5 +331,6 @@ module.exports = {
     getUserSuccessResponse,
     createLoginObject,
     getAllUsers,
-    deleteAccount
+    deleteAccount,
+    verifyEmail
 }

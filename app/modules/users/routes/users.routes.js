@@ -54,4 +54,10 @@ module.exports = (app) => {
         authenticateMiddleware,
         userController.deleteAccount
       );
+
+    app.post(
+        resources + "/verify-email",
+        authenticateMiddleware,
+        userController.verifyEmail
+      );  
 }

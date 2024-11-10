@@ -16,7 +16,8 @@ const mongoose = require("mongoose"),
     reset_password_token: { type: String, default: null },
     account_status: { type: String, default: config.accountStatuses[0] },
     deletedAt: { type: Date, default: null },
-    super_admin:{ type: Boolean,default:false }
+    super_admin:{ type: Boolean,default:false },
+    email_verfication_code:{type:Number}
   });
   userData.plugin(mongooseTimestamp);
   userData.index({ email: 1, user_type: 1 }, { unique: true });

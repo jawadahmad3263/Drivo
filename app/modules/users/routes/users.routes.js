@@ -5,8 +5,6 @@ const {
     authenticateMiddleware,
 } = require('../../../../config/passport')
 
-const commonLib = require('../../globals/global.library')
-
 const resources = '/accounts'
 
 module.exports = (app) => {
@@ -59,5 +57,12 @@ module.exports = (app) => {
         resources + "/verify-email",
         authenticateMiddleware,
         userController.verifyEmail
-      );  
+      );
+
+    app.post(
+        resources + "/change-password",
+        authenticateMiddleware,
+        userController.maskedPassword,
+        userController.changePassword
+      ); 
 }

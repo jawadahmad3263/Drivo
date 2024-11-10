@@ -321,6 +321,37 @@ let verifyEmail=async (req, res, next) => {
       return next({ msgCode: '0014', status: 403 })
   }
 }
+const maskedPassword = async (req, res, next) => {
+  if (req.body.password) {
+    return commonLib.saltPassword(req.body.password, (err, maskedPassword) => {
+      if (maskedPassword) {
+        req.body.password = maskedPassword.password;
+        next();
+      }
+    });
+  }
+  next();
+};
+let changePassword=async (req, res, next) => {
+  try {
+    return commonHelper
+    .updateRow({
+      model: config.databaseModels.USER,
+      queryObj: { _id: req.user._id },
+      updatedObj: { password: req.body.password }
+    })
+    .then((updatedUser) => {
+      req.updatedUser = updatedUser;
+      return responseModule.successResponse(res, {
+        success: 1,
+        message: "Password Updated"
+      });
+    });
+} catch (error) {
+  console.log('error', error)
+    return next({ msgCode: '0014', status: 403 })
+}
+}
 module.exports = {
     signup,
     login,
@@ -332,5 +363,7 @@ module.exports = {
     createLoginObject,
     getAllUsers,
     deleteAccount,
-    verifyEmail
+    verifyEmail,
+    maskedPassword,
+    changePassword
 }

@@ -169,7 +169,7 @@ let refreshUserToken= async (req, res, next) => {
         }
         return next({ msgCode: "0007", status: 404 });
     } catch (error) {
-        return next({ msgCode: '0006', status: 403 })
+        return next({ msgCode: '0016', status: 403 })
     }
 }
 let getMe= async (req, res, next) => {
@@ -181,7 +181,7 @@ let getMe= async (req, res, next) => {
      req.user.userProfile = userProfile
      next()
     } catch (error) {
-        return next({ msgCode: '0006', status: 403 })
+        return next({ msgCode: '0016', status: 403 })
     }
 }
 let getUserSuccessResponse = (req, res, next) => {
@@ -192,7 +192,7 @@ let getUserSuccessResponse = (req, res, next) => {
             data: usersHelper.generateUserResponse(req.user) || {}
           });
     } catch (error) {
-        return next({ msgCode: '0006', status: 403 })
+        return next({ msgCode: '0016', status: 403 })
     }
 }
 let getAllUsers= async (req, res, next) => {
@@ -233,15 +233,38 @@ let getAllUsers= async (req, res, next) => {
   })
   } catch (error) {
     console.log('error', error)
-      return next({ msgCode: '0006', status: 403 })
+      return next({ msgCode: '0016', status: 403 })
   }
 }
 let deleteAccount= async (req, res, next) => {
   try {
-
+    console.log('req.user', req.user)
+    return commonHelper
+    .softDeleteRow(
+      {
+        model: config.databaseModels.USER,
+        queryObj: { _id: req.user._id }
+      }
+    ).then((user) => {
+      commonHelper.updateRow(
+        {
+          model: config.databaseModels.LOGIN,
+          queryObj: {
+            user_id: user._id,
+            logout_time: null
+          },
+          updatedObj: { logout_time: Date.now() }
+        }
+      ).then(() => {
+        return responseModule.successResponse(res, {
+          success: 1,
+          message: "Account deleted successfully."
+        });
+      });
+    })
   } catch (error) {
     console.log('error', error)
-      return next({ msgCode: '0006', status: 403 })
+      return next({ msgCode: '0013', status: 403 })
   }
 }
 module.exports = {

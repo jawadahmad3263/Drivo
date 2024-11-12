@@ -6,6 +6,7 @@ const addNew = ({ model, newObj }) => {
 };
 
 const updateRow = ({ model, queryObj, upsertOption, updatedObj }) => {
+  console.log('updatedObj', updatedObj)
   const upsertValue = upsertOption ? true : false;
   return mongoose
     .model(model)

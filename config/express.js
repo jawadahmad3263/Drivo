@@ -22,7 +22,7 @@ app.set("view engine", "jade");
 app.use(express.static(path.join(__dirname, "upload")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
+app.use('/upload', express.static('upload'));
 app.use(
   expressValidator({
     errorFormatter: function (param, msg, value) {

@@ -4,7 +4,7 @@ const {
     passport,
     authenticateMiddleware,
 } = require('../../../../config/passport')
-
+const upload = require("../../../../config/multer");
 const resources = '/accounts'
 
 module.exports = (app) => {
@@ -65,4 +65,13 @@ module.exports = (app) => {
         userController.maskedPassword,
         userController.changePassword
       ); 
+    app.patch(
+        resources + "/update-user",
+        authenticateMiddleware,
+        upload.single('profile_image'),
+        userMiddleWare.manageUserUpdation,
+        userController.updateUser,
+        userController.updateUserProfile,
+        userController.getUserSuccessResponse
+      );   
 }

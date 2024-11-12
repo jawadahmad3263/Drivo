@@ -10,5 +10,6 @@ module.exports = {
     DEFAULT_OFFSET: 0,
     DB_HOST:process.env.DB_HOST,
     DB_NAME: process.env.DB_NAME,
-    AUTH_KEY:process.env.AUTH_KEY
+    AUTH_KEY:process.env.AUTH_KEY,
+    BASE_URL:process.env.BASE_URL || 'http://localhost:3003'
 }

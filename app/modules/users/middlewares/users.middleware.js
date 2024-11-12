@@ -2,6 +2,7 @@ const commonLib = require('../../globals/global.library'),
 commonHelper = require("../../globals/commonHelper"),
 config = require("../../../../config/config.json"),
 _ = require("lodash");
+const mongoose = require("mongoose");
 let validateSignupParams = async(req, res, next) => {
    
     if (req.body.email) {
@@ -52,10 +53,42 @@ let validateRefreshUserTokenParams = (req, res, next) => {
         next,
     )
 }
+let manageUserUpdation = async (req, res, next) => {
+    try {
+        req.updateUserPayload = {};
+        req.updateUserProfilePayload = {};
+        req.message = "noting updated"
+        console.log('req.body', req.body)
+        const userFields = Object.keys(mongoose.model(config.databaseModels.USER).schema.paths);
+        const userProfileFields = Object.keys(mongoose.model(config.databaseModels.USER_PROFILE).schema.paths);
+
+        for (let field in req.body) {
+            if (userFields.includes(field)) {
+                req.updateUserPayload[field] = req.body[field];
+                continue;
+            }
+            if (userProfileFields.includes(field)) {
+                req.updateUserProfilePayload[field] = req.body[field];
+                continue;
+            }
+        }
+        if (req.file) {
+            const filePath = req.file.path; 
+            console.log('filePath', filePath)
+            req.updateUserProfilePayload = { ...req.updateUserProfilePayload, profile_image: filePath };
+          }
+        return next();
+    } catch (error) {
+        console.log('Caught error:', error);
+        return next({ msgCode: '0014', status: 403 });
+    }
+};
+
 module.exports = {
     validateSignupParams,
     validateLoginParams,
     validateEmailParams,
     validatePwdCodeParams,
     validateRefreshUserTokenParams,
+    manageUserUpdation
 }

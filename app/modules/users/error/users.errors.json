@@ -178,5 +178,10 @@
     "msg":{
       "EN": "Invalid verification code!"
     }
+  },
+  "5036":{
+    "msg":{
+      "EN": "password reset code is expired or invalid!"
+    }
   }
 }

@@ -33,45 +33,65 @@ module.exports = (app) => {
     )
 
     app.get(
-        resources + "/get-me",
+        resources + '/get-me',
         authenticateMiddleware,
         userController.getMe,
-        userController.getUserSuccessResponse
-      );
-    
-    app.post(resources + "/logout", authenticateMiddleware, userController.logout);
+        userController.getUserSuccessResponse,
+    )
+
+    app.post(
+        resources + '/logout',
+        authenticateMiddleware,
+        userController.logout,
+    )
 
     app.get(
-        resources + "/all",
+        resources + '/all',
         authenticateMiddleware,
-        userController.getAllUsers
-      );
+        userController.getAllUsers,
+    )
 
     app.post(
-        resources + "/delete",
+        resources + '/delete',
         authenticateMiddleware,
-        userController.deleteAccount
-      );
+        userController.deleteAccount,
+    )
 
     app.post(
-        resources + "/verify-email",
+        resources + '/verify-email',
         authenticateMiddleware,
-        userController.verifyEmail
-      );
+        userController.verifyEmail,
+    )
 
     app.post(
-        resources + "/change-password",
+        resources + '/change-password',
         authenticateMiddleware,
         userController.maskedPassword,
-        userController.changePassword
-      ); 
+        userController.changePassword,
+    )
+    //forget password api
+    app.post(
+        resources + '/forgot-password',
+        userMiddleWare.validateEmailParams,
+        userController.forgetPassword,
+    )
+
+    //verify reset password code
+    app.post(
+        resources + '/verifyPwdCode',
+        userMiddleWare.validatePwdCodeParams,
+        userController.verifyPwdCode,
+        userController.createLoginObject,
+        userController.loginResponse,
+    )
+
     app.patch(
-        resources + "/update-user",
+        resources + '/update-user',
         authenticateMiddleware,
         upload.single('profile_image'),
         userMiddleWare.manageUserUpdation,
         userController.updateUser,
         userController.updateUserProfile,
-        userController.getUserSuccessResponse
-      );   
+        userController.getUserSuccessResponse,
+    )
 }

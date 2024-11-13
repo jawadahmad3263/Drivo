@@ -11,5 +11,6 @@ module.exports = {
     DB_HOST:process.env.DB_HOST,
     DB_NAME: process.env.DB_NAME,
     AUTH_KEY:process.env.AUTH_KEY,
-    BASE_URL:process.env.BASE_URL || 'http://localhost:3003'
+    BASE_URL:process.env.BASE_URL || 'http://localhost:3003',
+    RESET_CODE_EXPIRY_TIME:process.env.RESET_CODE_EXPIRY_TIME||1800000
 }

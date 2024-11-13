@@ -6,7 +6,6 @@ const addNew = ({ model, newObj }) => {
 };
 
 const updateRow = ({ model, queryObj, upsertOption, updatedObj }) => {
-  console.log('updatedObj', updatedObj)
   const upsertValue = upsertOption ? true : false;
   return mongoose
     .model(model)
@@ -19,8 +18,8 @@ const updateArrayInRow = ({ model, queryObj, updatedObj }) => {
     .findOneAndUpdate(queryObj, updatedObj, { new: true });
 };
 
-const queryRow = async ({ model, queryObj }) => {
-  return mongoose.model(model).findOne(queryObj).lean();
+const queryRow = async ({ model, queryObj,populatedObj }) => {
+  return mongoose.model(model).findOne(queryObj).populate(populatedObj).lean();
 };
 
 const queryAll = async ({ model, queryObj }) => {

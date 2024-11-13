@@ -10,7 +10,10 @@ const {
     DEFAULT_LIMIT,
     DEFAULT_OFFSET,
 } = require('../../../../config/constants.js')
-const { sendEmailVerificationCode } = require('../../../../config/email')
+const {
+    sendEmailVerificationCode,
+    sendForgetPwdEmail,
+} = require('../../../../config/email')
 let signup = async (req, res, next) => {
     try {
         return commonHelper
@@ -73,7 +76,7 @@ const login = async (req, res, next) => {
             model: config.databaseModels.USER_PROFILE,
             queryObj: { user_id: user._id },
         })
-        req.user.userProfile = userProfile || {}
+        req.user.user_profile = userProfile || {}
 
         return bcrypt
             .compare(req.body.password, user.password)
@@ -101,15 +104,17 @@ let loginResponse = async (req, res, next) => {
             req.deviceToken,
         )
         req.user.token = { ...token }
+        let modifiedMessage = ''
         if (req.action === 'Signup' && req.user.email_verfication_code) {
             sendEmailVerificationCode(
                 req.user.email,
                 req.user.email_verfication_code,
             )
+            modifiedMessage = ' !Email verification code is sent to your email'
         }
         return responseModule.successResponse(res, {
             success: 1,
-            message: `${req.action} successfully! Email verification code is sent to your email`,
+            message: `${req.action} successfully${modifiedMessage}`,
             data: usersHelper.generateUserResponse(req.user) || {},
         })
     } catch (error) {
@@ -211,7 +216,7 @@ let getMe = async (req, res, next) => {
             model: config.databaseModels.USER_PROFILE,
             queryObj: { user_id: req.user._id },
         })
-        req.user.userProfile = userProfile
+        req.user.user_profile = userProfile
         next()
     } catch (error) {
         return next({ msgCode: '0016', status: 403 })
@@ -389,12 +394,76 @@ let updateUserProfile = async (req, res, next) => {
             queryObj: { user_id: req.user._id },
             updatedObj: req.updateUserProfilePayload,
         })
-        req.user.userProfile = userProfile
+        req.user.user_profile = userProfile
         req.message = 'updated successfully'
         return next()
     } catch (error) {
         console.log('error', error)
         return next({ msgCode: '0014', status: 403 })
+    }
+}
+
+let forgetPassword = async (req, res, next) => {
+    try {
+        const user = await commonHelper.queryRow({
+            model: config.databaseModels.USER,
+            queryObj: { email: _.trim(req.body.email).toLowerCase() },
+            populatedObj: 'user_profile',
+        })
+        if (!user) return next({ msgCode: 5033, status: 403 })
+        let emailData = {
+            first_name: user?.user_profile?.first_name || 'DRIVO',
+            last_name: user?.user_profile?.last_name || 'USER',
+            email: user?.email,
+        }
+        let reset_code = crypto.randomInt(1000, 10000)
+        let emailSuccess = await sendForgetPwdEmail({
+            ...emailData,
+            reset_code: reset_code,
+        })
+        if (emailSuccess.accepted && emailSuccess.accepted.length > 0) {
+            return commonHelper
+                .addNew({
+                    model: config.databaseModels.RESET_CODE,
+                    newObj: {
+                        user_id: user._id,
+                        reset_code: reset_code,
+                    },
+                })
+                .then((result) => {
+                    return responseModule.successResponse(res, {
+                        success: 1,
+                        message: 'activation code has been sent to the email',
+                    })
+                })
+        }
+        next({ msgCode: 5031, status: 403 })
+    } catch (error) {
+        console.log('error', error)
+        return next({ msgCode: '0014', status: 403 })
+    }
+}
+let verifyPwdCode = async (req, res, next) => {
+    try {
+        const resetCodeData = await commonHelper.queryRow({
+            model: config.databaseModels.RESET_CODE,
+            queryObj: { reset_code: req.body.reset_code },
+        })
+
+        if (resetCodeData) {
+            const user = await commonHelper.queryRow({
+                model: config.databaseModels.USER,
+                queryObj: { _id: resetCodeData?.user_id },
+                populatedObj: 'user_profile',
+            })
+            req.action = 'Login'
+            req.user = user
+            return next()
+        }
+        return next({ msgCode: 5036, status: 403 })
+    } catch (error) {
+        console.log('error', error)
+        return next({ msgCode: 5036, status: 403 })
     }
 }
 module.exports = {
@@ -413,4 +482,6 @@ module.exports = {
     changePassword,
     updateUser,
     updateUserProfile,
+    forgetPassword,
+    verifyPwdCode,
 }

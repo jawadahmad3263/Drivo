@@ -88,10 +88,15 @@ module.exports = (app) => {
     app.patch(
         resources + '/update-user',
         authenticateMiddleware,
-        upload.single('profile_image'),
+        upload.fields([
+            { name: 'profile_image', maxCount: 1 },
+            // { name: 'car_picture', maxCount: 1 },
+            { name: 'license_picture', maxCount: 1 },
+        ]),
         userMiddleWare.manageUserUpdation,
         userController.updateUser,
         userController.updateUserProfile,
+        userController.updateRiderProfile,
         userController.getUserSuccessResponse,
     )
 }

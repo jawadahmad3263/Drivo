@@ -27,6 +27,12 @@ const mongoose = require("mongoose"),
     foreignField: "user_id",
     justOne: true
   });
+  userData.virtual("rider_profile", {
+    ref: config.databaseModels.RIDER_PROFILE,
+    localField: "_id",
+    foreignField: "user_id",
+    justOne: true
+  });
   //hash password
   userData.pre("save", async function (next) {
     const user = this;

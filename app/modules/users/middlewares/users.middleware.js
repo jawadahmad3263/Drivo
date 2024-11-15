@@ -57,11 +57,11 @@ let manageUserUpdation = async (req, res, next) => {
     try {
         req.updateUserPayload = {};
         req.updateUserProfilePayload = {};
+        req.updateRiderProfilePayload = {};
         req.message = "noting updated"
-        console.log('req.body', req.body)
         const userFields = Object.keys(mongoose.model(config.databaseModels.USER).schema.paths);
         const userProfileFields = Object.keys(mongoose.model(config.databaseModels.USER_PROFILE).schema.paths);
-
+        const riderProfileFields = Object.keys(mongoose.model(config.databaseModels.RIDER_PROFILE).schema.paths);
         for (let field in req.body) {
             if (userFields.includes(field)) {
                 req.updateUserPayload[field] = req.body[field];
@@ -71,12 +71,22 @@ let manageUserUpdation = async (req, res, next) => {
                 req.updateUserProfilePayload[field] = req.body[field];
                 continue;
             }
+            if (riderProfileFields.includes(field)) {
+                req.updateRiderProfilePayload[field] = req.body[field];
+                continue;
+            }
         }
-        if (req.file) {
-            const filePath = req.file.path; 
-            console.log('filePath', filePath)
-            req.updateUserProfilePayload = { ...req.updateUserProfilePayload, profile_image: filePath };
-          }
+        if (req.files) {
+            if (req.files.profile_image && req.files.profile_image[0]) {
+                req.updateUserProfilePayload.profile_image = req.files.profile_image[0].path;
+            }
+            // if (req.files.car_picture && req.files.car_picture[0]) {
+            //     req.updateRiderProfilePayload.car_picture = req.files.car_picture[0].path;
+            // }
+            if (req.files.license_picture && req.files.license_picture[0]) {
+                req.updateRiderProfilePayload.license_picture = req.files.license_picture[0].path;
+            }
+        }
         return next();
     } catch (error) {
         console.log('Caught error:', error);

@@ -34,7 +34,16 @@ let signup = async (req, res, next) => {
                             user_id: user._id,
                         },
                     })
-                    .then((userProfile) => {
+                    .then(async (userProfile) => {
+                        if (user.user_type === config.userTypes[2]) {
+                            const riderProfile = await commonHelper.addNew({
+                                model: config.databaseModels.RIDER_PROFILE,
+                                newObj: {
+                                    user_id: user._id,
+                                },
+                            })
+                            user.rider_profile = riderProfile
+                        }
                         user.userProfile = userProfile
                         req.user = user
                         req.action = 'Signup'
@@ -387,8 +396,13 @@ let updateUser = async (req, res, next) => {
 }
 let updateUserProfile = async (req, res, next) => {
     try {
-        if (Object.keys(req.updateUserProfilePayload).length === 0)
+        if (Object.keys(req.updateUserProfilePayload).length === 0) {
+            req.user.user_profile = await commonHelper.queryRow({
+                model: config.databaseModels.USER_PROFILE,
+                queryObj: { user_id: req.user._id },
+            })
             return next()
+        }
         const userProfile = await commonHelper.updateRow({
             model: config.databaseModels.USER_PROFILE,
             queryObj: { user_id: req.user._id },
@@ -402,7 +416,29 @@ let updateUserProfile = async (req, res, next) => {
         return next({ msgCode: '0014', status: 403 })
     }
 }
-
+let updateRiderProfile = async (req, res, next) => {
+    try {
+        if (Object.keys(req.updateRiderProfilePayload).length === 0) {
+            if (req.user.user_type === config.userTypes[2])
+                req.user.rider_profile = await commonHelper.queryRow({
+                    model: config.databaseModels.RIDER_PROFILE,
+                    queryObj: { user_id: req.user._id },
+                })
+            return next()
+        }
+        const riderProfile = await commonHelper.updateRow({
+            model: config.databaseModels.RIDER_PROFILE,
+            queryObj: { user_id: req.user._id },
+            updatedObj: req.updateRiderProfilePayload,
+        })
+        req.user.rider_profile = riderProfile
+        req.message = 'updated successfully'
+        return next()
+    } catch (error) {
+        console.log('error', error)
+        return next({ msgCode: '0014', status: 403 })
+    }
+}
 let forgetPassword = async (req, res, next) => {
     try {
         const user = await commonHelper.queryRow({
@@ -484,4 +520,5 @@ module.exports = {
     updateUserProfile,
     forgetPassword,
     verifyPwdCode,
+    updateRiderProfile,
 }

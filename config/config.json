@@ -3,7 +3,9 @@
         "USER": "user",
         "USER_PROFILE":"user_profile",
         "LOGIN":"login",
-        "RESET_CODE":"reset_code"
+        "RESET_CODE":"reset_code",
+        "RIDER_PROFILE":"rider_profile",
+        "RIDER_CAR":"rider_car"
     },
     "userTypes": [
         "admin",
@@ -43,5 +45,11 @@
     "verificationStatus":[
         "unverified",
          "verified"
+    ],
+    "bookingStatus": [
+        "awaiting",
+        "accepted",
+        "cancelled",
+        "completed"
     ]
 }

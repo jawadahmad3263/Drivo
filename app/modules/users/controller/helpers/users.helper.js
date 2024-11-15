@@ -22,10 +22,44 @@ function generateUserResponse(data) {
         rating:data?.rating||null,
         refresh_token:data?.refresh_token,
         super_admin:data?.super_admin,
+        rider_profile:data.rider_profile?generateRiderProfileResponse(data?.rider_profile):null,
+        createdAt: data?.createdAt,
+        updatedAt: data?.updatedAt,
+    };
+}
+function generateRiderProfileResponse(data) {
+    return {
+        id: data?.id,
+        user_id: data?.user_id,
+        license_number: data?.license_number || null,
+        license_expiry_date: data?.license_expiry_date || null,
+        license_picture: data?.license_picture ? `${BASE_URL}/${data.license_picture}` : null,
+        rating: data?.rating || 0,
+        completed_rides: data?.completed_rides || 0,
+        total_earnings: data?.total_earnings || 0,
+        email: data?.email || null,
+        is_verified: data?.is_verified || false,
+        is_available: data?.is_available || true,
+        createdAt: data?.createdAt,
+        updatedAt: data?.updatedAt,
+    };
+}
+function generateRiderCarResponse(data) {
+    return {
+        id: data?.id,
+        user_id: data?.user_id,
+        car_number: data?.car_number || null,
+        car_model: data?.car_model || null,
+        car_picture: data?.car_picture ? `${BASE_URL}/${data.car_picture}` : null,
+        car_color: data?.car_color || null,
+        car_year: data?.car_year || null,
+        car_seats: data?.car_seats || null,
         createdAt: data?.createdAt,
         updatedAt: data?.updatedAt,
     };
 }
 module.exports = {
-    generateUserResponse
+    generateUserResponse,
+    generateRiderProfileResponse,
+    generateRiderCarResponse
 }

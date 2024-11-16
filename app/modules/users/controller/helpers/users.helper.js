@@ -47,7 +47,7 @@ function generateRiderProfileResponse(data) {
 function generateRiderCarResponse(data) {
     return {
         id: data?.id,
-        user_id: data?.user_id,
+        rider_profile_id: data?.rider_profile_id,
         car_number: data?.car_number || null,
         car_model: data?.car_model || null,
         car_picture: data?.car_picture ? `${BASE_URL}/${data.car_picture}` : null,

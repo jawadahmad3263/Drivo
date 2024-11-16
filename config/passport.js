@@ -3,7 +3,7 @@ const passportJWT = require("passport-jwt");
 const { AUTH_KEY } = require("./constants");
 const User = require("../app/modules/users/models/users.model");
 const config = require("./config.json");
-
+const commonHelper = require("../app/modules/globals/commonHelper")
 const JwtStrategy = passportJWT.Strategy;
 const ExtractJwt = passportJWT.ExtractJwt;
 
@@ -19,6 +19,15 @@ const jwtStrategy = new JwtStrategy(
     try {
       const user = await User.findOne({ _id: jwtPayload.id });
       if (user) {
+        user_profile = await commonHelper.queryRow({
+          model: config.databaseModels.USER_PROFILE,
+          queryObj: { user_id: user._id },
+      })
+      if(user.user_type === config.userTypes[2])
+        user.rider_profile = await commonHelper.queryRow({
+          model: config.databaseModels.RIDER_PROFILE,
+          queryObj: { user_id: user._id },
+      })
         return done(null, user, jwtPayload);
       } else {
         return done(null, false);

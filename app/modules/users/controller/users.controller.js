@@ -502,6 +502,73 @@ let verifyPwdCode = async (req, res, next) => {
         return next({ msgCode: 5036, status: 403 })
     }
 }
+let addCarDetails = async (req, res, next) => {
+    try {
+        if (req.files.car_picture && req.files.car_picture[0])
+            req.body.car_picture = req.files.car_picture[0].path
+        let newObj = {
+            rider_profile_id: req.user.rider_profile._id,
+            car_number: req.body.car_number,
+            car_model: req.body.car_model,
+            car_picture: req.body.car_picture||null,
+            car_color: req.body.car_color,
+            car_year: req.body.car_year,
+            car_seats: req.body.car_seats,
+        }
+       return commonHelper.addNew({
+            model: config.databaseModels.RIDER_CAR,
+            newObj
+        }).then((addedObj)=>{
+            return responseModule.successResponse(res, {
+                success: 1,
+                message: "Car details added successfully",
+                data: usersHelper.generateRiderCarResponse(addedObj) || {},
+            })
+        })
+    } catch (error) {
+        console.log('error', error)
+        return next({ msgCode: '0015', status: 403 })
+    }
+}
+let getCarDetails = async (req, res, next) => {
+    try {
+        req.rider_car = await commonHelper.queryRow({
+            model: config.databaseModels.RIDER_CAR,
+            queryObj: { _id: req.query.id },
+        })
+        return next()
+    } catch (error) {
+        return next({ msgCode: '0016', status: 403 })
+    }
+}
+let updateCarDetails = async (req, res, next) => {
+    try {
+        if (Object.keys(req.updateCarPayload).length === 0) {
+            return next()
+        }
+        const rider_car = await commonHelper.updateRow({
+            model: config.databaseModels.RIDER_CAR,
+            queryObj: {_id: req.body.id },
+            updatedObj: req.updateCarPayload,
+        })
+        req.rider_car = rider_car
+        req.message = 'Car details updated successfully'
+        return next()
+    } catch (error) {
+        return next({ msgCode: '0014', status: 403 })
+    }
+}
+let getCarSuccessResponse = (req, res, next) => {
+    try {
+        return responseModule.successResponse(res, {
+            success: 1,
+            message: req.message,
+            data: usersHelper.generateRiderCarResponse(req.rider_car) || {},
+        })
+    } catch (error) {
+        return next({ msgCode: '0016', status: 403 })
+    }
+}
 module.exports = {
     signup,
     login,
@@ -521,4 +588,8 @@ module.exports = {
     forgetPassword,
     verifyPwdCode,
     updateRiderProfile,
+    addCarDetails,
+    getCarDetails,
+    updateCarDetails,
+    getCarSuccessResponse
 }

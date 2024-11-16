@@ -5,6 +5,7 @@ const {
     authenticateMiddleware,
 } = require('../../../../config/passport')
 const upload = require("../../../../config/multer");
+const config = require("../../../../config/config.json");
 const resources = '/accounts'
 
 module.exports = (app) => {
@@ -98,5 +99,33 @@ module.exports = (app) => {
         userController.updateUserProfile,
         userController.updateRiderProfile,
         userController.getUserSuccessResponse,
+    )
+
+    app.post(
+        '/add-car-details',
+        authenticateMiddleware,
+        passport.authorize([config.userTypes[2]]),
+        upload.fields([{ name: 'car_picture', maxCount: 1 },]),
+        userMiddleWare.validateCarParams,
+        userController.addCarDetails,
+    )
+    app.get(
+        '/car-details',
+        authenticateMiddleware,
+        userMiddleWare.validateCarId,
+        userController.getCarDetails,
+        userController.getCarSuccessResponse
+    )
+    app.patch(
+        '/update-car-details',
+        authenticateMiddleware,
+        passport.authorize([config.userTypes[2]]),
+        upload.fields([
+            { name: 'car_picture', maxCount: 1 },
+        ]),
+        userMiddleWare.validateCarId,
+        userMiddleWare.manageCarUpdation,
+        userController.updateCarDetails,
+        userController.getCarSuccessResponse
     )
 }

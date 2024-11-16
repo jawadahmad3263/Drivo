@@ -80,9 +80,6 @@ let manageUserUpdation = async (req, res, next) => {
             if (req.files.profile_image && req.files.profile_image[0]) {
                 req.updateUserProfilePayload.profile_image = req.files.profile_image[0].path;
             }
-            // if (req.files.car_picture && req.files.car_picture[0]) {
-            //     req.updateRiderProfilePayload.car_picture = req.files.car_picture[0].path;
-            // }
             if (req.files.license_picture && req.files.license_picture[0]) {
                 req.updateRiderProfilePayload.license_picture = req.files.license_picture[0].path;
             }
@@ -93,12 +90,58 @@ let manageUserUpdation = async (req, res, next) => {
         return next({ msgCode: '0014', status: 403 });
     }
 };
-
+let manageCarUpdation = async (req, res, next) => {
+    try {
+        req.updateCarPayload = {}
+        req.message = 'noting updated'
+        const carFields = Object.keys(
+            mongoose.model(config.databaseModels.RIDER_CAR).schema.paths,
+        )
+        for (let field in req.body) {
+            if (carFields.includes(field)) {
+                req.updateCarPayload[field] = req.body[field]
+                continue
+            }
+        }
+        if (req.files) {
+            if (req.files.car_picture && req.files.car_picture[0]) {
+                req.updateCarPayload.car_picture = req.files.car_picture[0].path
+            }
+        }
+        return next()
+    } catch (error) {
+        console.log('Caught error:', error)
+        return next({ msgCode: '0014', status: 403 })
+    }
+}
+let validateCarParams= (req, res, next) => {
+    req.assert('car_number', 5038).notEmpty(),
+    req.assert('car_model', 5039).notEmpty(),
+    req.assert('car_color', 5040).notEmpty(),
+    req.assert('car_year', 5041).notEmpty(),
+    req.assert('car_seats', 5042).notEmpty(),
+    commonLib.validationResponse(
+        'can not proceed with missing token',
+        req,
+        next,
+    )
+}
+let validateCarId = (req, res, next) => {
+    req.assert('id', 5037).notEmpty(),
+    commonLib.validationResponse(
+        'can not proceed with missing token',
+        req,
+        next,
+    )
+}
 module.exports = {
     validateSignupParams,
     validateLoginParams,
     validateEmailParams,
     validatePwdCodeParams,
     validateRefreshUserTokenParams,
-    manageUserUpdation
+    manageUserUpdation,
+    validateCarParams,
+    manageCarUpdation,
+    validateCarId
 }

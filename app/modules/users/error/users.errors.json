@@ -183,5 +183,36 @@
     "msg":{
       "EN": "password reset code is expired or invalid!"
     }
+  },
+  "5037":{
+    "msg":{
+      "EN": "please provide car id!"
+    }
+  },
+  "5038":{
+    "msg":{
+      "EN": "please provide car_number!"
+    }
+  },
+  "5039":{
+    "msg":{
+      "EN": "please provide car_model!"
+    }
+  },
+  "5040":{
+    "msg":{
+      "EN": "please provide car_color!"
+    }
+  },
+  "5041":{
+    "msg":{
+      "EN": "please provide car_year!"
+    }
+  },
+  "5042":{
+    "msg":{
+      "EN": "please provide car_seats!"
+    }
   }
+
 }

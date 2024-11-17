@@ -5,7 +5,9 @@
         "LOGIN":"login",
         "RESET_CODE":"reset_code",
         "RIDER_PROFILE":"rider_profile",
-        "RIDER_CAR":"rider_car"
+        "RIDER_CAR":"rider_car",
+        "REVIEWS":"reviews",
+        "BOOKING":"booking"
     },
     "userTypes": [
         "admin",

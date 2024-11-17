@@ -1,0 +1,32 @@
+{
+    "6000": {
+      "msg": {
+        "EN": "Please Provide review id."
+      }
+    },
+    "6001": {
+      "msg": {
+        "EN": "Please provide rider_id to post/get review."
+      }
+    },
+    "6002": {
+      "msg": {
+        "EN": "Already posted a review on this user in the provided booking."
+      }
+    },
+    "6003": {
+        "msg": {
+          "EN": "reviews not found"
+        }
+    },
+    "6004": {
+        "msg": {
+          "EN": "please provide stars"
+        }
+    },
+    "6005": {
+      "msg": {
+        "EN": "please provide review on user id "
+      }
+  }
+}

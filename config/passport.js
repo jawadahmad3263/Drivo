@@ -23,6 +23,7 @@ const jwtStrategy = new JwtStrategy(
           model: config.databaseModels.USER_PROFILE,
           queryObj: { user_id: user._id },
       })
+      user.user_profile=user_profile;
       if(user.user_type === config.userTypes[2])
         user.rider_profile = await commonHelper.queryRow({
           model: config.databaseModels.RIDER_PROFILE,

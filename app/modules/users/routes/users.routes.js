@@ -36,7 +36,7 @@ module.exports = (app) => {
     app.get(
         resources + '/get-me',
         authenticateMiddleware,
-        userController.getMe,
+        // userController.getMe,
         userController.getUserSuccessResponse,
     )
 

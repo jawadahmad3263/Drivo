@@ -219,18 +219,18 @@ let refreshUserToken = async (req, res, next) => {
         return next({ msgCode: '0016', status: 403 })
     }
 }
-let getMe = async (req, res, next) => {
-    try {
-        const userProfile = await commonHelper.queryRow({
-            model: config.databaseModels.USER_PROFILE,
-            queryObj: { user_id: req.user._id },
-        })
-        req.user.user_profile = userProfile
-        next()
-    } catch (error) {
-        return next({ msgCode: '0016', status: 403 })
-    }
-}
+// let getMe = async (req, res, next) => {
+//     try {
+//         const userProfile = await commonHelper.queryRow({
+//             model: config.databaseModels.USER_PROFILE,
+//             queryObj: { user_id: req.user._id },
+//         })
+//         req.user.user_profile = userProfile
+//         next()
+//     } catch (error) {
+//         return next({ msgCode: '0016', status: 403 })
+//     }
+// }
 let getUserSuccessResponse = (req, res, next) => {
     try {
         return responseModule.successResponse(res, {
@@ -575,7 +575,7 @@ module.exports = {
     loginResponse,
     logout,
     refreshUserToken,
-    getMe,
+    // getMe,
     getUserSuccessResponse,
     createLoginObject,
     getAllUsers,

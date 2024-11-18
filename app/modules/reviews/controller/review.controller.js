@@ -64,6 +64,54 @@ let updateReview = async (req, res, next) => {
 }
 let getAllReviews = async (req, res, next) => {
     try {
+        let { offset, limit, review_on } = req.query
+        offset = isNaN(offset) ? DEFAULT_OFFSET : Number(offset)
+        limit = isNaN(limit) ? DEFAULT_LIMIT : Number(limit)
+        let queryObj = {}
+        if (review_on) queryObj = { ...queryObj, review_on: review_on }
+        let reviewCount = await commonHelper.getCount({
+            model: config.databaseModels.REVIEWS,
+            queryObj,
+        })
+
+        if (!reviewCount) return responseModule.successResponse(res, {
+            success: 1,
+            message: 'No reviews exist',
+            offset: offset,
+            limit: limit,
+            length: 0,
+            data: [],
+        })
+        return commonHelper
+            .makeSpecializedQuery({
+                model: config.databaseModels.REVIEWS,
+                queryObj: queryObj,
+                offset: offset,
+                limit: limit,
+                populatedObj: [
+                    { path: 'review_by', select: 'email user_type',
+                     populate: { 
+                        path: 'user_profile',
+                        select: 'first_name last_name profile_image', 
+                    }
+                    }, 
+                    { path: 'review_on', select: 'email user_type' }  
+                ],
+            })
+            .then((reviewsList) => {
+                let data = []
+                reviewsList?.forEach(function (doc) {
+                    data.push(reviewHelper.generateReviewResponse(doc),)
+                })
+                return responseModule.successResponse(res, {
+                    success: 1,
+                    message: 'Review fetched successfully',
+                    offset: offset + reviewsList.length,
+                    limit: limit,
+                    length: reviewCount,
+                    data: data
+                })
+            })
     } catch (error) {
         return next({ msgCode: '0016', status: 403 })
     }

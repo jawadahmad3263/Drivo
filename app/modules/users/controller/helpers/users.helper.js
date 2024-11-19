@@ -35,6 +35,7 @@ function generateRiderProfileResponse(data) {
         license_expiry_date: data?.license_expiry_date || null,
         license_picture: data?.license_picture ? `${BASE_URL}/${data.license_picture}` : null,
         rating: data?.rating || 0,
+        total_stars:data?.total_stars||0,
         completed_rides: data?.completed_rides || 0,
         total_earnings: data?.total_earnings || 0,
         email: data?.email || null,

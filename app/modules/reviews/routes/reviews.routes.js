@@ -14,14 +14,16 @@ module.exports = (app) => {
     authenticateMiddleware,
     reviewsMiddleWare.validateAddReviewParams,
     reviewsController.addNewReview,
+    reviewsController.updateOverAllRatings,
     // notificationController.userReviewedNotification,
-    reviewsController.addReviewResponse
+    reviewsController.reviewResponse
   );
   app.get(
     resources,
     authenticateMiddleware,
     reviewsMiddleWare.validateReviewIdParams,
-    reviewsController.getsingleReviewDetail
+    reviewsController.getsingleReviewDetail,
+    reviewsController.reviewResponse
   );
 
   app.put(

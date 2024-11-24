@@ -7,8 +7,32 @@
         "RIDER_PROFILE":"rider_profile",
         "RIDER_CAR":"rider_car",
         "REVIEWS":"reviews",
-        "BOOKING":"booking"
+        "BOOKING":"bookings",
+        "NOTIFICATION":"notification",
+        "POOL_MEMBER":"pool_members",
+        "FARE_ESTIMATION":"fare_estimation"
     },
+    "notification": {
+        "pending": "You have a new booking request!",
+        "accepted": "Your booking has been accepted!",
+        "completed": "Leave a review",
+        "declined": "Your booking has been cancelled!",
+        "reviewd": "You have a new review!",
+        "message": "You receive a new message from",
+        "account_verification":"Account has been verified",
+        "pool_request":"New user request to add in your pool ride",
+        "request_cancelled":"Sorry! your request has been cancelled. Try another one",
+        "title": {
+          "pending": "Booking Request",
+          "accepted": "Booking Accepted",
+          "declined": "Booking Cancelled",
+          "completed": "Review Request",
+          "reviewd": "User Reviewed",
+          "message": "Received message",
+          "pool_request":"Pool request",
+          "request_cancelled":"Pool request cancelled"
+        }
+      },
     "userTypes": [
         "admin",
         "user",
@@ -53,5 +77,15 @@
         "accepted",
         "cancelled",
         "completed"
+    ],
+    "requestStatus": [
+        "request",
+        "accepted",
+        "cancelled"
+    ],
+    "carCategory": [
+        "business",
+        "economy",
+        "bike"
     ]
 }

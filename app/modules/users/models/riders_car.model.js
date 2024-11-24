@@ -11,6 +11,7 @@ const riderCarData = new mongoose.Schema({
    car_color: { type: String},
    car_year: { type: Number}, 
    car_seats:{type:Number},
+   car_class:{ type: String,required: true },//business/economy/bike
    deletedAt: { type: Date, default: null },
 });
 

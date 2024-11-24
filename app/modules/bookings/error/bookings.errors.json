@@ -29,5 +29,10 @@
       "msg": {
         "EN": "please provide rider id."
       }
+    },
+    "4006": {
+      "msg": {
+        "EN": "please provide booking_type"
+      }
     }
 }

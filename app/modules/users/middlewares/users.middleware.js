@@ -120,6 +120,7 @@ let validateCarParams= (req, res, next) => {
     req.assert('car_color', 5040).notEmpty(),
     req.assert('car_year', 5041).notEmpty(),
     req.assert('car_seats', 5042).notEmpty(),
+    req.assert('car_class', 5043).notEmpty(),
     commonLib.validationResponse(
         'can not proceed with missing token',
         req,

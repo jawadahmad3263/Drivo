@@ -213,6 +213,11 @@
     "msg":{
       "EN": "please provide car_seats!"
     }
+  },
+  "5043":{
+    "msg":{
+      "EN": "please provide car_class! e:g business/economy/bike"
+    }
   }
 
 }

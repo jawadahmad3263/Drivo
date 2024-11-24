@@ -55,6 +55,7 @@ function generateRiderCarResponse(data) {
         car_color: data?.car_color || null,
         car_year: data?.car_year || null,
         car_seats: data?.car_seats || null,
+        car_class:data?.car_class||null,
         createdAt: data?.createdAt,
         updatedAt: data?.updatedAt,
     };

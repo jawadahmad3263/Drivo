@@ -514,6 +514,7 @@ let addCarDetails = async (req, res, next) => {
             car_color: req.body.car_color,
             car_year: req.body.car_year,
             car_seats: req.body.car_seats,
+            car_class:config.carCategory[parseInt(req.body.car_class)]
         }
        return commonHelper.addNew({
             model: config.databaseModels.RIDER_CAR,

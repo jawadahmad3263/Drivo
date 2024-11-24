@@ -18,7 +18,7 @@ let addNewReview = async (req, res, next) => {
                     comment: req.body.comment || '',
                     review_on: req.body.review_on,
                     review_by: req.user._id,
-                    // booking_id:req.body.booking_id
+                    booking_id:req.body.booking_id||null
                 },
             })
             .then((addedObj) => {

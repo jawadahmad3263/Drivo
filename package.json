@@ -22,6 +22,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "express-validator": "5.3.1",
+    "firebase-admin": "^13.0.1",
     "glob": "^8.0.3",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",

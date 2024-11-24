@@ -16,7 +16,7 @@ function generateReviewResponse(data) {
             firstName: data?.review_by?.user_profile?.first_name,
             lastName: data?.review_by?.user_profile?.last_name,
         },
-        // booking_id: data?.booking_id,//pending
+        booking_id: data?.booking_id,//pending
         createdAt: data?.createdAt,
         updatedAt: data?.updatedAt,
     };

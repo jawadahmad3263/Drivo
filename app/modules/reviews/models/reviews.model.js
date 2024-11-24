@@ -7,7 +7,7 @@ let reviewData = new mongoose.Schema({
     comment: { type: String, default: "" },
     review_on: { type: mongoose.Schema.Types.ObjectId, ref: config.databaseModels.USER }, 
     review_by: { type: mongoose.Schema.Types.ObjectId, ref: config.databaseModels.USER }, 
-    // booking_id: { type: mongoose.Schema.Types.ObjectId, ref: config.databaseModels.BOOKING }, //pending right now
+    booking_id: { type: mongoose.Schema.Types.ObjectId, ref: config.databaseModels.BOOKING }, //pending right now
     approved: { type: Boolean, default: true }
   });
   reviewData.plugin(mongooseTimestamp);

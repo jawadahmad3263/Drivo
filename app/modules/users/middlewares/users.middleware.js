@@ -97,6 +97,8 @@ let manageCarUpdation = async (req, res, next) => {
         const carFields = Object.keys(
             mongoose.model(config.databaseModels.RIDER_CAR).schema.paths,
         )
+        if(req.body.car_class)
+        req.body.car_class = config.carCategory[parseInt(req.body.car_class)]
         for (let field in req.body) {
             if (carFields.includes(field)) {
                 req.updateCarPayload[field] = req.body[field]

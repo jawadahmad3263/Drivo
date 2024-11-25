@@ -9,7 +9,11 @@ let validateAddFareParams = (req, res, next) => {
     commonLib.validationResponse('User could not be logged in', req, next)
 }
 
-
+let validateEstimationId= (req, res, next) => {
+    req.assert('id', 7001).notEmpty()
+    commonLib.validationResponse('User could not be logged in', req, next)
+}
 module.exports = {
-    validateAddFareParams
+    validateAddFareParams,
+    validateEstimationId
 }

@@ -10,10 +10,15 @@ const resources = '/settings'
 module.exports = (app) => {
    //update fare 
   app.put(
-    resources + "/update-fare",
+    resources + "/update-estimated-fare",
     authenticateMiddleware,
-    passport.authorize([config.userTypes[0]]),//only admin
+    // passport.authorize([config.userTypes[0]]),//only admin
     settingsMiddleWare.validateEstimationId,
     settingsController.updateEstimationFare
   );
+  app.get(
+    resources + '/estimated-fare',
+    authenticateMiddleware,
+    settingsController.getAllEstimatedFares
+)
 }

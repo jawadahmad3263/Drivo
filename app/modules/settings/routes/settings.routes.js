@@ -12,7 +12,7 @@ module.exports = (app) => {
   app.put(
     resources + "/update-estimated-fare",
     authenticateMiddleware,
-    // passport.authorize([config.userTypes[0]]),//only admin
+    passport.authorize([config.userTypes[0]]),//only admin
     settingsMiddleWare.validateEstimationId,
     settingsController.updateEstimationFare
   );

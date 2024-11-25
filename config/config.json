@@ -87,5 +87,9 @@
         "business",
         "economy",
         "bike"
+    ],
+    "rideTypes": [
+        "ride",
+        "pool"
     ]
 }

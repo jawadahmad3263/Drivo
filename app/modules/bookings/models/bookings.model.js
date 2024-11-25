@@ -3,7 +3,7 @@ const config = require("../../../../config/config.json");
 const mongooseTimestamp = require("mongoose-timestamp");
 
 let bookingData = new mongoose.Schema({
-    ride_type: { type: String,required: true },//pool/single
+    ride_type: { type: String,required: true },//pool/ride
     ride_class:{ type: String,required: true },//business/economy/bike
     status: { type: Number,default:config.bookingStatus[0]},
     rider_id: { type: mongoose.Schema.Types.ObjectId, ref: config.databaseModels.USER}, 

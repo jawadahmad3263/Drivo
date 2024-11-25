@@ -4,8 +4,6 @@ const commonLib = require('../../../globals/global.library');
 function generateBookingResponse(data) {
     return {
         id: data?.id,
-        createdAt: data?.createdAt,
-        updatedAt: data?.updatedAt,
         rideType: data?.ride_type, // pool/single
         rideClass: data?.ride_class, // business/economy/bike
         status: data?.status,
@@ -23,9 +21,23 @@ function generateBookingResponse(data) {
         poolMemberFare: data?.pool_member_fare,
         poolDate: data?.pool_date,
         poolTime: data?.pool_time,
+        createdAt: data?.createdAt,
+        updatedAt: data?.updatedAt,
     };
 }
 
+function generatePoolMemberResponse(data) {
+    return {
+        id: data?.id,
+        status:data?.status,
+        individual_fare:data?.individual_fare,
+        user_id:data?.user_id,
+        createdAt: data?.createdAt,
+        updatedAt: data?.updatedAt,
+    }
+}   
+
 module.exports = {
     generateBookingResponse,
+    generatePoolMemberResponse
 }

@@ -13,7 +13,7 @@ const {
 } = require('../../../../config/constants.js')
 let addBooking = async (req, res, next) => {
     try {
-        req.message = "New booking added"
+        req.message = `New ${req.body.ride_type} request`
         return next()
     } catch (error) {
         console.log('error', error)

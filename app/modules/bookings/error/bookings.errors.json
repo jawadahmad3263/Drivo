@@ -16,12 +16,12 @@
     },
     "4003": {
       "msg": {
-        "EN": "please provide booking_time."
+        "EN": "please provide pool_time."
       }
     },
     "4004": {
       "msg": {
-        "EN": "please provide booking_date."
+        "EN": "please provide pool_date."
       }
     },
     
@@ -32,7 +32,47 @@
     },
     "4006": {
       "msg": {
-        "EN": "please provide booking_type"
+        "EN": "please provide ride_type"
+      }
+    },
+    "4007": {
+      "msg": {
+        "EN": "please provide ride_class"
+      }
+    },
+    "4008": {
+      "msg": {
+        "EN": "please provide estimated_time"
+      }
+    },
+    "4009": {
+      "msg": {
+        "EN": "please provide estimated_distince"
+      }
+    },
+    "4010": {
+      "msg": {
+        "EN": "please provide start_location"
+      }
+    },
+    "4011": {
+      "msg": {
+        "EN": "please provide end_location"
+      }
+    },
+    "4012": {
+      "msg": {
+        "EN": "please provide total_fare"
+      }
+    },
+    "4013": {
+      "msg": {
+        "EN": "please provide pool_gender"
+      }
+    },
+    "4014": {
+      "msg": {
+        "EN": "please provide pool_members_length"
       }
     }
 }

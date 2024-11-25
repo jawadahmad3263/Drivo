@@ -510,22 +510,24 @@ let addCarDetails = async (req, res, next) => {
             rider_profile_id: req.user.rider_profile._id,
             car_number: req.body.car_number,
             car_model: req.body.car_model,
-            car_picture: req.body.car_picture||null,
+            car_picture: req.body.car_picture || null,
             car_color: req.body.car_color,
             car_year: req.body.car_year,
             car_seats: req.body.car_seats,
-            car_class:config.carCategory[parseInt(req.body.car_class)]
+            car_class: config.carCategory[parseInt(req.body.car_class)],
         }
-       return commonHelper.addNew({
-            model: config.databaseModels.RIDER_CAR,
-            newObj
-        }).then((addedObj)=>{
-            return responseModule.successResponse(res, {
-                success: 1,
-                message: "Car details added successfully",
-                data: usersHelper.generateRiderCarResponse(addedObj) || {},
+        return commonHelper
+            .addNew({
+                model: config.databaseModels.RIDER_CAR,
+                newObj,
             })
-        })
+            .then((addedObj) => {
+                return responseModule.successResponse(res, {
+                    success: 1,
+                    message: 'Car details added successfully',
+                    data: usersHelper.generateRiderCarResponse(addedObj) || {},
+                })
+            })
     } catch (error) {
         console.log('error', error)
         return next({ msgCode: '0015', status: 403 })
@@ -549,7 +551,7 @@ let updateCarDetails = async (req, res, next) => {
         }
         const rider_car = await commonHelper.updateRow({
             model: config.databaseModels.RIDER_CAR,
-            queryObj: {_id: req.body.id },
+            queryObj: { _id: req.body.id },
             updatedObj: req.updateCarPayload,
         })
         req.rider_car = rider_car
@@ -592,5 +594,5 @@ module.exports = {
     addCarDetails,
     getCarDetails,
     updateCarDetails,
-    getCarSuccessResponse
+    getCarSuccessResponse,
 }

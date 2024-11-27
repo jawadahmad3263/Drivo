@@ -5,7 +5,7 @@ const mongooseTimestamp = require("mongoose-timestamp");
 let bookingData = new mongoose.Schema({
     ride_type: { type: String,required: true },//pool/ride
     ride_class:{ type: String,required: true },//business/economy/bike
-    status: { type: Number,default:config.bookingStatus[0]},
+    status: { type: String,default:config.bookingStatus[0]},
     rider_id: { type: mongoose.Schema.Types.ObjectId, ref: config.databaseModels.USER}, 
     booker_id: { type: mongoose.Schema.Types.ObjectId, ref: config.databaseModels.USER,required: true },
     estimated_time:{type:Number,required: true},//in minutes
@@ -25,11 +25,13 @@ let bookingData = new mongoose.Schema({
         required: true, 
       },
     total_fare:{type: Number,required: true},
-    payment_status:{type: Number,default:0},
+    payment_status:{type: String,default:config.paymentStatus[0]},
+    rider_accept_at:{ type: Date },
+    ride_start_at:{ type: Date },
     //pool specific field
     pool_gender: { type: String},//all/male/female
     pool_members_length:{type: Number},//member length 4
-    pool_member_fare:{type: Number},
+    // pool_member_fare:{type: Number},
     pool_date:{ type: Date },
     pool_time:{ type: Date},
 

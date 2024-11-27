@@ -6,6 +6,8 @@ let poolMemberData = new mongoose.Schema({
     user_id: { type: mongoose.Schema.Types.ObjectId, ref: config.databaseModels.USER }, 
     booking_id: { type: mongoose.Schema.Types.ObjectId, ref: config.databaseModels.BOOKING }, 
     status: { type: String, default: config.requestStatus[0] },
+    request_accept_at:{ type: Date },
+    request_cancelled_at:{ type: Date },
     individual_fare:{type: Number},
   });
   poolMemberData.plugin(mongooseTimestamp);

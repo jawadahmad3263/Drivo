@@ -5,13 +5,14 @@ const {
     authenticateMiddleware,
 } = require('../../../../config/passport')
 const config = require("../../../../config/config.json");
-const resources = '/bookings'
+const resources = '/booking'
 
 module.exports = (app) => {
    //add booking  
   app.post(
     resources,
     authenticateMiddleware,
+    passport.authorize([config.userTypes[1]]),
     bookingsMiddleWare.validatebookingParams,
     bookingsController.addBooking,
     bookingsController.bookingResponse

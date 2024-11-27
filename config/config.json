@@ -91,5 +91,9 @@
     "rideTypes": [
         "ride",
         "pool"
+    ],
+    "paymentStatus":[
+        "pending",
+        "received"
     ]
 }

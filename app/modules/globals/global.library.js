@@ -87,6 +87,43 @@ let generateRandomString = (length) => {
         .toString('hex')
         .slice(0, length)
 }
+let stringTimeToUtcTime = (timeString) => {
+    const [time, modifier] = timeString.split(/(am|pm)/i)
+    let [hours, minutes] = time.trim().split(':').map(Number)
+
+    if (modifier.toLowerCase() === 'pm' && hours < 12) {
+        hours += 12
+    }
+    if (modifier.toLowerCase() === 'am' && hours === 12) {
+        hours = 0
+    }
+
+    const currentDate = new Date()
+    const utcDate = new Date(
+        Date.UTC(
+            currentDate.getUTCFullYear(),
+            currentDate.getUTCMonth(),
+            currentDate.getUTCDate(),
+            hours,
+            minutes,
+        ),
+    )
+    return utcDate.getTime()
+}
+let formatUtcToStringTime = (utcString) => {
+    const utcDate = new Date(utcString)
+    let hours = utcDate.getUTCHours()
+    const minutes = utcDate.getUTCMinutes()
+    const ampm = hours >= 12 ? 'pm' : 'am'
+
+    hours = hours % 12
+    hours = hours ? hours : 12 // the hour '0' should be '12'
+
+    const minutesString = minutes.toString().padStart(2, '0')
+    const timeString = `${hours}:${minutesString} ${ampm}`
+
+    return timeString
+}
 module.exports = {
     fetchIPAdress,
     saltPassword,
@@ -94,4 +131,6 @@ module.exports = {
     createAndSaveAuthTokens,
     extractUserDataFromToken,
     generateRandomString,
+    stringTimeToUtcTime,
+    formatUtcToStringTime
 }

@@ -38,4 +38,19 @@ module.exports = (app) => {
     authenticateMiddleware,
     bookingsController.getAllBookings
   );
+  app.post(
+    resources + "/pool/request",
+    authenticateMiddleware,
+    passport.authorize([config.userTypes[1]]),
+    bookingsMiddleWare.validatebookingId,
+    bookingsController.addPoolMember,
+    bookingsController.commonResponse
+  );
+  app.put(
+    resources + "/pool/accept-reject-member-req",
+    authenticateMiddleware,
+    passport.authorize([config.userTypes[1]]),
+    bookingsController.acceptRejectPoolMember,
+    bookingsController.commonResponse
+  );
 }

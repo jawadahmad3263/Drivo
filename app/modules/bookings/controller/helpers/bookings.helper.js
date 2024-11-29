@@ -7,8 +7,8 @@ function generateBookingResponse(data) {
         ride_type: data?.ride_type, // pool/single
         ride_class: data?.ride_class, // business/economy/bike
         status: data?.status,
-        rider_id: data?.rider_id,
-        booker_id: data?.booker_id,
+        rider: data?.rider_id,
+        booker: data?.booker_id,
         estimated_time: data?.estimated_time, // in minutes
         estimated_distince: data?.estimated_distince, // in meters
         start_location: data?.start_location, // { lat, lng }
@@ -23,6 +23,7 @@ function generateBookingResponse(data) {
         ride_start_at:data.ride_start_at||null,
         pool_date: data?.pool_date,
         pool_time: data?.pool_time&&commonLib.formatUtcToStringTime(data?.pool_time),
+        pool_members:data?.pool_members,
         createdAt: data?.createdAt,
         updatedAt: data?.updatedAt,
     };

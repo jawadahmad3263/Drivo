@@ -11,19 +11,21 @@ let bookingData = new mongoose.Schema({
     estimated_time:{type:Number,required: true},//in minutes
     estimated_distince:{type:Number,required: true},//in meters
     start_location: {
-        type: {
-          lat: { type: Number, required: true },
-          lng: { type: Number, required: true },
-        },
-        required: true, 
+      type: {
+          type: String,
+          enum: ['Point'],
+          required: true,
       },
-      end_location: {
-        type: {
-          lat: { type: Number, required: true },
-          lng: { type: Number, required: true },
-        },
-        required: true, 
+      coordinates: { type: [Number], required: true }, // [lng, lat]
+     },
+     end_location: {
+      type: {
+          type: String,
+          enum: ['Point'],
+          required: true,
       },
+      coordinates: { type: [Number], required: true }, // [lng, lat]
+     },
     total_fare:{type: Number,required: true},
     payment_status:{type: String,default:config.paymentStatus[0]},
     rider_accept_at:{ type: Date },
@@ -37,6 +39,12 @@ let bookingData = new mongoose.Schema({
 
   });
   bookingData.plugin(mongooseTimestamp);
+  bookingData.virtual("pool_members", {
+    ref: config.databaseModels.POOL_MEMBER,
+    localField: "_id",
+    foreignField: "booking_id",
+    justOne: false
+  });
   
   const bookings = mongoose.model("bookings", bookingData);
   module.exports = bookings;

@@ -128,4 +128,10 @@ module.exports = (app) => {
         userController.updateCarDetails,
         userController.getCarSuccessResponse
     )
+    app.put(
+        resources +'/update-location',
+        authenticateMiddleware,
+        userController.updateLocation,
+        userController.locationResponse
+    )
 }

@@ -218,6 +218,11 @@
     "msg":{
       "EN": "please provide car_class! e:g business/economy/bike"
     }
+  },
+  "5044":{
+    "msg":{
+      "EN": "Latitude and longitude are required"
+    }
   }
 
 }

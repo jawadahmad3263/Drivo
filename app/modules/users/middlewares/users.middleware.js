@@ -137,6 +137,14 @@ let validateCarId = (req, res, next) => {
         next,
     )
 }
+let validateLocation= (req, res, next) => {
+    // req.assert('id', 5037).notEmpty(),
+    commonLib.validationResponse(
+        'can not proceed with missing token',
+        req,
+        next,
+    )
+}
 module.exports = {
     validateSignupParams,
     validateLoginParams,
@@ -146,5 +154,6 @@ module.exports = {
     manageUserUpdation,
     validateCarParams,
     manageCarUpdation,
-    validateCarId
+    validateCarId,
+    validateLocation
 }

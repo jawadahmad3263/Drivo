@@ -20,12 +20,18 @@ let addBooking = async (req, res, next) => {
             estimated_time:parseFloat(req.body.estimated_time),
             estimated_distince:parseFloat(req.body.estimated_distince),
             start_location: {
-                lat: parseFloat(req.body.start_location.lat),
-                lng: parseFloat(req.body.start_location.lng),
+                type: "Point",
+                coordinates: [
+                    parseFloat(req.body.start_location.lng), // Longitude first
+                    parseFloat(req.body.start_location.lat), // Latitude second
+                ],
             },
             end_location: {
-                lat: parseFloat(req.body.end_location.lat),
-                lng: parseFloat(req.body.end_location.lng),
+                type: "Point",
+                coordinates: [
+                    parseFloat(req.body.end_location.lng), // Longitude first
+                    parseFloat(req.body.end_location.lat), // Latitude second
+                ],
             },
             total_fare:req.body.total_fare,
         }
@@ -95,9 +101,9 @@ let addPoolMember = async (req, res, next) => {
                     user_id: req.user._id
                 }
             })
-            .then((addedObj) => {
-                req.poolMemberRequest = addedObj
-                req.action = 'Your Request has been added'
+            .then((actionObj) => {
+                req.actionObj = actionObj
+                req.message = 'Your Request has been added'
                 return next()
             })
     } catch (error) {
@@ -105,9 +111,84 @@ let addPoolMember = async (req, res, next) => {
         return next({ msgCode: '0015', status: 403 })
     }
 }
-let getSingleBooking = (req, res, next) => {
+let acceptRejectPoolMember = async (req, res, next) => {
     try {
-        
+        return commonHelper
+             .updateRow({
+                model: config.databaseModels.POOL_MEMBER,
+                queryObj:{_id:req.query.id},
+                updatedObj:{
+                    status:req.query.status.toLowerCase()
+                }
+            })
+            .then((actionObj) => {
+                req.actionObj = actionObj
+                req.message = `pool member ${req.query.status.toLowerCase()} successfully`
+                return next()
+            })
+    } catch (error) {
+        console.log('error', error)
+        return next({ msgCode: '0015', status: 403 })
+    }
+}
+let commonResponse = (req, res, next) => {
+    try {
+        return responseModule.successResponse(res, {
+            success: 1,
+            message: req.message,
+            data: req.actionObj,
+        })
+    } catch (error) {
+        return next({ msgCode: '0016', status: 403 })
+    }
+}
+let getSingleBooking =async (req, res, next) => {
+    try {
+        let queryObj;
+        if(!req.query.booking_id){
+          queryObj={
+            //pending 'current
+          }
+        }
+        else
+        {
+            queryObj = { _id: req.query.booking_id }
+        }
+        const bookingObj = await commonHelper.queryRow({
+            model: config.databaseModels.BOOKING,
+            queryObj: queryObj,
+            populatedObj: [
+                {
+                    path: 'rider_id',
+                    select: '_id email user_type',
+                    populate: {
+                        path: 'user_profile',
+                        select: 'first_name last_name profile_image',
+                    },
+                },
+                {
+                    path: 'booker_id',
+                    select: '_id email user_type',
+                    populate: {
+                        path: 'user_profile',
+                        select: 'first_name last_name profile_image',
+                    },
+                },
+                {
+                    path: 'pool_members',
+                    select: '_id individual_fare status',
+                    populate: {
+                        path: 'user_id',
+                        select: '_id email user_type',
+                        populate: {
+                            path: 'user_profile',
+                            select: 'first_name last_name profile_image',
+                        },
+                    },
+                },
+            ],
+        })
+        req.bookingObj = bookingObj
         req.message = "Single booking details fetched successfully"
         return next()
     } catch (error) {
@@ -118,19 +199,98 @@ let getSingleBooking = (req, res, next) => {
 let updateBooking = (req, res, next) => {
     try {
 
+
         req.message = "Booking updated successfully"
+        if(req.query.status)
+        req.message = `Booking ${req.query.status} successfully`;
+        
         return next()
     } catch (error) {
         return next({ msgCode: '0016', status: 403 })
     }
 }
 
-let getAllBookings = (req, res, next) => {
+let getAllBookings =async (req, res, next) => {
     try {
-        let { offset, limit, booking_type, booking_status } = req.query
+        let { offset, limit, ride_class, booking_status,ride_type,rider_id,user_id } = req.query
         offset = isNaN(offset) ? DEFAULT_OFFSET : Number(offset)
         limit = isNaN(limit) ? DEFAULT_LIMIT : Number(limit)
         let queryObj = {}
+        if(booking_status)
+        queryObj = {...queryObj,status:booking_status}
+        if(booking_status)
+        queryObj = {...queryObj,ride_class:ride_class}
+        if(ride_type)
+        queryObj = {...queryObj,ride_type:ride_type}
+        if(rider_id)
+        queryObj = {...queryObj,rider_id:rider_id}
+        if(user_id)
+        queryObj = {...queryObj,booker_id:user_id}
+        let bookingCount = await commonHelper.getCount({
+            model: config.databaseModels.BOOKING,
+            queryObj,
+        })
+
+        if (!bookingCount)
+            return responseModule.successResponse(res, {
+                success: 1,
+                message: 'No bookings exist',
+                offset: offset,
+                limit: limit,
+                length: 0,
+                data: [],
+            })
+            return commonHelper
+            .makeSpecializedQuery({
+                model: config.databaseModels.BOOKING,
+                queryObj: queryObj,
+                offset: offset,
+                limit: limit,
+                populatedObj: [
+                    {
+                        path: 'rider_id',
+                        select: '_id email user_type',
+                        populate: {
+                            path: 'user_profile',
+                            select: 'first_name last_name profile_image',
+                        },
+                    },
+                    {
+                        path: 'booker_id',
+                        select: '_id email user_type',
+                        populate: {
+                            path: 'user_profile',
+                            select: 'first_name last_name profile_image',
+                        },
+                    },
+                    {
+                        path: 'pool_members',
+                        select: '_id individual_fare status',
+                        populate: {
+                            path: 'user_id',
+                            select: '_id email user_type',
+                            populate: {
+                                path: 'user_profile',
+                                select: 'first_name last_name profile_image',
+                            },
+                        },
+                    },
+                ],
+            })
+            .then((bookingsList) => {
+                let data = []
+                bookingsList?.forEach(function (doc) {
+                    data.push( bookingHelper.generateBookingResponse(doc))
+                })
+                return responseModule.successResponse(res, {
+                    success: 1,
+                    message: 'bookings fetched successfully',
+                    offset: offset + bookingsList.length,
+                    limit: limit,
+                    length: bookingCount,
+                    data: data,
+                })
+            })
     } catch (error) {
         return next({ msgCode: '0016', status: 403 })
     }
@@ -141,5 +301,7 @@ module.exports = {
     getSingleBooking,
     updateBooking,
     getAllBookings,
-    addPoolMember
+    addPoolMember,
+    commonResponse,
+    acceptRejectPoolMember
 }

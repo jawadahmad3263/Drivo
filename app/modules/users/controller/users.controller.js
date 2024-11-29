@@ -572,6 +572,41 @@ let getCarSuccessResponse = (req, res, next) => {
         return next({ msgCode: '0016', status: 403 })
     }
 }
+let updateLocation = async (req, res, next) => {
+    try {
+        const { lat, lng } = req.body.location
+
+        if (!lat || !lng) {
+            return next({ msgCode: 5044, status: 400 })
+        }
+
+        const updatedObj = {
+            user_id: req.user._id,
+            location: {
+                type: 'Point',
+                coordinates: [parseFloat(lng), parseFloat(lat)], // Longitude first
+            },
+        }
+        const updatedLocation = await commonHelper.updateRow({
+            model: config.databaseModels.USER_LOCATION,
+            queryObj: { user_id: req.user._id },
+            upsertOption: true,
+            updatedObj: updatedObj,
+        })
+        req.locationObj = updatedLocation
+        req.message = 'location updated'
+        return next()
+    } catch (error) {
+        return next({ msgCode: '0014', status: 403 })
+    }
+}
+let locationResponse = (req, res, next) => {
+    return responseModule.successResponse(res, {
+        success: 1,
+        message: req.message,
+        data: req.locationObj,
+    })
+}
 module.exports = {
     signup,
     login,
@@ -595,4 +630,6 @@ module.exports = {
     getCarDetails,
     updateCarDetails,
     getCarSuccessResponse,
+    updateLocation,
+    locationResponse,
 }

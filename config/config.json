@@ -10,7 +10,8 @@
         "BOOKING":"bookings",
         "NOTIFICATION":"notification",
         "POOL_MEMBER":"pool_members",
-        "FARE_ESTIMATION":"fare_estimation"
+        "FARE_ESTIMATION":"fare_estimation",
+        "USER_LOCATION":"user_location"
     },
     "notification": {
         "pending": "You have a new booking request!",

@@ -5,7 +5,8 @@ let userLoginData = new schema({
   device_token: { type: String,default:null },
   user_id: { type: schema.Types.ObjectId, ref: "user" },
   login_time: { type: Date, default: Date.now },
-  logout_time: { type: Date, default: null }
+  logout_time: { type: Date, default: null },
+  is_available: { type: Boolean, default: true },
 });
 const login = mongoose.model("login", userLoginData);
 module.exports = login;

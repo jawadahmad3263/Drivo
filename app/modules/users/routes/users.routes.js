@@ -134,4 +134,10 @@ module.exports = (app) => {
         userController.updateLocation,
         userController.locationResponse
     )
+    app.put(
+        resources +'/availability',
+        authenticateMiddleware,
+        userController.changeAvailability,
+        userController.getUserSuccessResponse,
+    )
 }

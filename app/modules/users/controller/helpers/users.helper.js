@@ -23,6 +23,7 @@ function generateUserResponse(data) {
         refresh_token:data?.refresh_token,
         super_admin:data?.super_admin,
         rider_profile:data.rider_profile?generateRiderProfileResponse(data?.rider_profile):null,
+        is_available:data?.login?.is_available,
         createdAt: data?.createdAt,
         updatedAt: data?.updatedAt,
     };
@@ -40,7 +41,7 @@ function generateRiderProfileResponse(data) {
         total_earnings: data?.total_earnings || 0,
         email: data?.email || null,
         is_verified: data?.is_verified || false,
-        is_available: data?.is_available || true,
+        // is_available: data?.is_available || true,
         createdAt: data?.createdAt,
         updatedAt: data?.updatedAt,
     };

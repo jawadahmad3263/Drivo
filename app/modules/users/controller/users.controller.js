@@ -138,6 +138,7 @@ const logout = async (req, res, next) => {
             user_id: req.user._id,
             device_token: req.body?.device_token,
             logout_time: null,
+            is_available:false
         }
 
         await commonHelper
@@ -177,7 +178,8 @@ let createLoginObject = async (req, res, next) => {
 
         return commonHelper
             .addNew({ model: config.databaseModels.LOGIN, newObj: loginObject })
-            .then(() => {
+            .then((loginObj) => {
+                req.user.login =loginObj
                 next()
             })
             .catch((err) => {
@@ -188,9 +190,10 @@ let createLoginObject = async (req, res, next) => {
             .updateRow({
                 model: config.databaseModels.LOGIN,
                 queryObj: { _id: previousLogin._id },
-                updatedObj: { login_time: Date.now(), logout_time: null },
+                updatedObj: { login_time: Date.now(), logout_time: null,is_available:true },
             })
-            .then(() => {
+            .then((loginObj) => {
+                req.user.login =loginObj
                 next()
             })
             .catch((err) => {
@@ -231,8 +234,13 @@ let refreshUserToken = async (req, res, next) => {
 //         return next({ msgCode: '0016', status: 403 })
 //     }
 // }
-let getUserSuccessResponse = (req, res, next) => {
+let getUserSuccessResponse = async(req, res, next) => {
     try {
+        if(!req.user.login)
+       req.user.login = await commonHelper.queryRow({
+            model: config.databaseModels.LOGIN,
+            queryObj: { user_id: req.user._id },
+        })
         return responseModule.successResponse(res, {
             success: 1,
             message: req.message || 'fetched successfully',
@@ -607,6 +615,19 @@ let locationResponse = (req, res, next) => {
         data: req.locationObj,
     })
 }
+let changeAvailability= async (req, res, next) => {
+    try {
+        req.user.login = await commonHelper.updateRow({
+            model: config.databaseModels.LOGIN,
+            queryObj: { user_id: req.user._id },
+            updatedObj: {is_available:req.query.is_available},
+        })
+        req.message = `Marked availability ${req.query.is_available}`
+        return next()
+    } catch (error) {
+        return next({ msgCode: '0014', status: 403 })
+    }
+}
 module.exports = {
     signup,
     login,
@@ -632,4 +653,5 @@ module.exports = {
     getCarSuccessResponse,
     updateLocation,
     locationResponse,
+    changeAvailability
 }

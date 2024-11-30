@@ -14,8 +14,7 @@ const riderProfileData = new mongoose.Schema({
    total_stars:{ type: Number, default: 0 },
    completed_rides: { type: Number, default: 0 },
    total_earnings: { type: Number, default: 0 }, 
-   is_verified: { type: Boolean, default: false }, 
-   is_available: { type: Boolean, default: true },
+   is_verified: { type: Boolean, default: false },
   
 });
 riderProfileData.virtual("rider_car", {

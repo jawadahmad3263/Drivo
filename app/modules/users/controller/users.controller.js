@@ -241,6 +241,13 @@ let getUserSuccessResponse = async(req, res, next) => {
             model: config.databaseModels.LOGIN,
             queryObj: { user_id: req.user._id },
         })
+        if(req.user.user_type === config.userTypes[2])
+        {
+            req.user.rider_car = await commonHelper.queryRow({
+                model: config.databaseModels.RIDER_CAR,
+                queryObj: { rider_profile_id: req.user.rider_profile._id },
+            })
+        }
         return responseModule.successResponse(res, {
             success: 1,
             message: req.message || 'fetched successfully',
@@ -529,7 +536,13 @@ let addCarDetails = async (req, res, next) => {
                 model: config.databaseModels.RIDER_CAR,
                 newObj,
             })
-            .then((addedObj) => {
+            .then(async(addedObj) => {
+              await commonHelper.updateRow({
+                    model: config.databaseModels.USER_LOCATION,
+                    queryObj: { user_id: req.user._id },
+                    upsertOption: true,
+                    updatedObj: {car_class:addedObj?.car_class},
+                })
                 return responseModule.successResponse(res, {
                     success: 1,
                     message: 'Car details added successfully',
@@ -562,6 +575,13 @@ let updateCarDetails = async (req, res, next) => {
             queryObj: { _id: req.body.id },
             updatedObj: req.updateCarPayload,
         })
+        if(req.query.car_class){
+        await commonHelper.updateRow({
+            model: config.databaseModels.USER_LOCATION,
+            queryObj: { user_id: req.user._id },
+            upsertOption: true,
+            updatedObj: {car_class:rider_car?.car_class},
+        })}
         req.rider_car = rider_car
         req.message = 'Car details updated successfully'
         return next()
@@ -587,9 +607,9 @@ let updateLocation = async (req, res, next) => {
         if (!lat || !lng) {
             return next({ msgCode: 5044, status: 400 })
         }
-
         const updatedObj = {
             user_id: req.user._id,
+            user_type:req.user.user_type,
             location: {
                 type: 'Point',
                 coordinates: [parseFloat(lng), parseFloat(lat)], // Longitude first

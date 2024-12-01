@@ -14,7 +14,7 @@
         "USER_LOCATION":"user_location"
     },
     "notification": {
-        "pending": "You have a new ride request!",
+        "ride_request": "You have a new {{ride}} request!",
         "accepted": "Your ride has been accepted!",
         "completed": "Leave a review",
         "declined": "Your ride has been cancelled!",
@@ -24,13 +24,13 @@
         "pool_request":"New user request to add in your pool ride",
         "request_cancelled":"Sorry! your request has been cancelled. Try another one",
         "title": {
-          "pending": "ride Request",
+          "ride_request": "{{ride}} Request",
           "accepted": "ride Accepted",
           "declined": "ride Cancelled",
           "completed": "Review Request",
           "reviewd": "User Reviewed",
           "message": "Received message",
-          "pool_request":"Pool request",
+          "pool_request":"Pool member request",
           "request_cancelled":"Pool request cancelled"
         }
       },

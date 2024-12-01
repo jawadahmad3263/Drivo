@@ -5,6 +5,10 @@ const addNew = ({ model, newObj }) => {
   return new (mongoose.model(model))(newObj).save();
 };
 
+const addMany = ({ model, newObjs }) => {
+  return mongoose.model(model).insertMany(newObjs);
+};
+
 const updateRow = ({ model, queryObj, upsertOption, updatedObj }) => {
   const upsertValue = upsertOption ? true : false;
   return mongoose
@@ -134,5 +138,6 @@ module.exports = {
   makeSpecializedQuery,
   makeSpecializedSingleQuery,
   blindUpdate,
-  doesRecordExist
+  doesRecordExist,
+  addMany
 };

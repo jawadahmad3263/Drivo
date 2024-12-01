@@ -81,7 +81,7 @@ let addBooking = async (req, res, next) => {
 }
 let bookingResponse = (req, res, next) => {
     try {
-        console.log('req.bookingObj', req.bookingObj)
+        // console.log('req.bookingObj', req.bookingObj)
         return responseModule.successResponse(res, {
             success: 1,
             message: req.message,

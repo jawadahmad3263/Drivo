@@ -7,22 +7,86 @@ const config = require('../../../../config/config.json')
 const {
     DEFAULT_LIMIT,
     DEFAULT_OFFSET,
+    RADIUS_OF
 } = require('../../../../config/constants.js')
-const { send_notification } = require('../../../../config/send_notification')
-const saveToDbAndNotify = async (deviceTokens, notificationObj) => {
-    const notificationSaved = await commonHelper.addNew({
-        model: config.databaseModels.NOTIFICATION,
-        newObj: notificationObj,
-    })
-    if (
-        !deviceTokens ||
-        deviceTokens === null ||
-        deviceTokens === undefined ||
-        deviceTokens.length === 0
-    ) {
-        throw new Error('No deviceTokens available')
-    } else return send_notification(deviceTokens, notificationSaved)
-}
+const { sendNotification } = require('../../../../config/send_notification')
+
+const saveToDbAndNotify = async (deviceTokens, notificationObj, multipleForIds) => {
+    let notificationSaved;
+
+    if (multipleForIds && multipleForIds.length > 0) {
+        const notificationEntries = multipleForIds.map((riderId) => ({
+            ...notificationObj,
+            notification_for: riderId, // Assign each rider ID
+        }));
+
+        const result = await commonHelper.addMany({
+            model: config.databaseModels.NOTIFICATION,
+            newObjs: notificationEntries,
+        });
+        if (result && result.length > 0) {
+            notificationSaved = result[0];
+        } else {
+            throw new Error('Failed to save multiple notifications');
+        }
+    } else {
+        notificationSaved = await commonHelper.addNew({
+            model: config.databaseModels.NOTIFICATION,
+            newObj: notificationObj,
+        });
+    }
+
+    if (!deviceTokens || deviceTokens.length === 0) {
+        throw new Error('No deviceTokens available');
+    }
+    return sendNotification(deviceTokens, notificationSaved);
+};
+
+const getRidersDeviceTokens = async (startLocation,ride_type,ride_class) => {
+    try {
+        const rad = ride_type === config.rideTypes[0] ? parseInt(RADIUS_OF) : 150000;
+        let queryObj =  {
+            user_type:config.userTypes[2],
+            car_class:ride_class,
+            location: {
+                $nearSphere: {
+                    $geometry: {
+                        type: "Point",
+                        coordinates:startLocation.coordinates, // Your point (lng, lat)
+                    },
+                    $maxDistance: rad, // Maximum distance (in meters)
+                },
+            },
+        }
+        const nearbyRiders = await commonHelper.queryAll({
+            model: config.databaseModels.USER_LOCATION,
+            queryObj: queryObj
+        });
+        const riderIds = nearbyRiders.map((location) => location.user_id.toString());
+
+        if (riderIds.length === 0) {
+            return null; // No riders nearby
+        }
+
+        const loginObjs = await commonHelper.queryAll({
+            model: config.databaseModels.LOGIN,
+            queryObj: {
+                user_id: { $in: riderIds },
+                logout_time: null, 
+                is_available: true, // Ensure the rider is available
+            },
+        });
+
+        const deviceTokens = loginObjs
+            .map((loginObj) => loginObj?.device_token)
+            .filter((token) => token !== null);
+
+        return {deviceTokens:deviceTokens,riderIds:riderIds};
+    } catch (error) {
+        console.error("Error in getRidersDeviceTokens:", error);
+        throw error;
+    }
+};
 
 const getDeviceToken = async (id) => {
     const loginObjs = await commonHelper.queryAll({
@@ -36,7 +100,34 @@ const getDeviceToken = async (id) => {
 
     return deviceTokens.length > 0 ? deviceTokens : null
 }
+let newBookingNotification = async (req, res, next) => {
+    let notificationObj = {
+        title:config.notification.title.ride_request.replace(
+            "{{ride}}",
+            req.bookingObj?.ride_type
+          ),
+        description: config.notification.ride_request.replace(
+            "{{ride}}",
+            req.bookingObj?.ride_type
+          ),
+        notification_by: req.user._id,
+        booking_id:req.bookingObj._id
+    }
+    let result = await getRidersDeviceTokens(req.bookingObj?.start_location,req.bookingObj.ride_type,req.bookingObj.ride_class)
+    console.log('result', result) 
+    if(result!==null){
+    req.riderIds = result?.riderIds
+    saveToDbAndNotify(result?.deviceTokens, notificationObj,req.riderIds)
+    .then(() =>{return next()})
+    .catch((err) => {
+      console.log("err", err);
+      return next();
+    });
+    }
+    else
+    return next()
 
+}
 let commonNotification = async (req, res, next) => {
     let deviceTokens
     if (req.notifyUser) {
@@ -45,10 +136,6 @@ let commonNotification = async (req, res, next) => {
         )
         req.notifyUser = false
     }
-    // else if(req.notifyAdmin) {
-    //   //section for admin
-    //   deviceTokens = await getAdminsDeviceTokens();
-    // }
     else {
         return next()
     }
@@ -208,4 +295,6 @@ module.exports = {
     getUnreadCount,
     clearNotification,
     readNotification,
+    getRidersDeviceTokens,
+    newBookingNotification
 }

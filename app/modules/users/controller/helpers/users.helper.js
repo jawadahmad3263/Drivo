@@ -23,6 +23,7 @@ function generateUserResponse(data) {
         refresh_token:data?.refresh_token,
         super_admin:data?.super_admin,
         rider_profile:data.rider_profile?generateRiderProfileResponse(data?.rider_profile):null,
+        rider_car:data?.rider_car&&generateRiderCarResponse(data?.rider_car),
         is_available:data?.login?.is_available,
         createdAt: data?.createdAt,
         updatedAt: data?.updatedAt,
@@ -30,7 +31,7 @@ function generateUserResponse(data) {
 }
 function generateRiderProfileResponse(data) {
     return {
-        id: data?.id,
+        id: data?._id,
         user_id: data?.user_id,
         license_number: data?.license_number || null,
         license_expiry_date: data?.license_expiry_date || null,

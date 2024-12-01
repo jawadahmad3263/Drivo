@@ -38,6 +38,8 @@ let bookingData = new mongoose.Schema({
     pool_time:{ type: Date},
 
   });
+  bookingData.index({ start_location: "2dsphere" });
+  bookingData.index({ end_location: "2dsphere" });
   bookingData.plugin(mongooseTimestamp);
   bookingData.virtual("pool_members", {
     ref: config.databaseModels.POOL_MEMBER,

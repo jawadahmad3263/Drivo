@@ -1,5 +1,6 @@
 const bookingsMiddleWare = require('../middlewares/bookings.middleware')
 const bookingsController = require('../controller/bookings.controller')
+const notificationController = require("../../notifications/controller/notifications.controller")
 const {
     passport,
     authenticateMiddleware,
@@ -15,6 +16,7 @@ module.exports = (app) => {
     passport.authorize([config.userTypes[1]]),
     bookingsMiddleWare.validatebookingParams,
     bookingsController.addBooking,
+    notificationController.newBookingNotification,
     bookingsController.bookingResponse
   
   );

@@ -226,9 +226,9 @@ let getSingleBooking =async (req, res, next) => {
     }
 }
 
-let updateBooking = (req, res, next) => {
+let updateBookingStatus = (req, res, next) => {
     try {
-
+       //On pending yet
 
         req.message = "Booking updated successfully"
         if(req.query.status)
@@ -329,7 +329,7 @@ module.exports = {
     addBooking,
     bookingResponse,
     getSingleBooking,
-    updateBooking,
+    updateBookingStatus,
     getAllBookings,
     addPoolMember,
     commonResponse,

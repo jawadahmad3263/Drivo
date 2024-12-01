@@ -27,11 +27,11 @@ module.exports = (app) => {
     bookingsController.getSingleBooking,
     bookingsController.bookingResponse
   );
-  //update booking
+  //update booking status
   app.put(
     resources,
     authenticateMiddleware,
-    bookingsController.updateBooking,
+    bookingsController.updateBookingStatus,
     bookingsController.bookingResponse
   );
   //get all bookings list

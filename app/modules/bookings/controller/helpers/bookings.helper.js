@@ -15,10 +15,11 @@ function generateBookingResponse(data) {
         end_location: data?.end_location, // { lat, lng }
         total_fare: data?.total_fare,
         payment_status: data?.payment_status,
+        ride_cancelled_at:data?.ride_cancelled_at,
+        ride_cancelled_by:data?.ride_cancelled_by,
         // Pool-specific fields
         pool_gender: data?.pool_gender, // all/male/female
         pool_members_length: data?.pool_members_length, 
-        // pool_member_fare: data?.pool_member_fare,
         rider_accept_at:data.rider_accept_at||null,
         ride_start_at:data.ride_start_at||null,
         pool_date: data?.pool_date,

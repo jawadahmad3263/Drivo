@@ -30,10 +30,11 @@ let bookingData = new mongoose.Schema({
     payment_status:{type: String,default:config.paymentStatus[0]},
     rider_accept_at:{ type: Date },
     ride_start_at:{ type: Date },
+    ride_cancelled_at:{ type: Date },
+    ride_cancelled_by:{ type: mongoose.Schema.Types.ObjectId, ref: config.databaseModels.USER}, 
     //pool specific field
     pool_gender: { type: String},//all/male/female
     pool_members_length:{type: Number},//member length 4
-    // pool_member_fare:{type: Number},
     pool_date:{ type: Date },
     pool_time:{ type: Date},
 

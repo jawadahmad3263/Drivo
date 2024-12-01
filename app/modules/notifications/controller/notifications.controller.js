@@ -91,7 +91,7 @@ const getRidersDeviceTokens = async (startLocation,ride_type,ride_class) => {
 const getDeviceToken = async (id) => {
     const loginObjs = await commonHelper.queryAll({
         model: config.databaseModels.LOGIN,
-        queryObj: { user_id: id, logout_time: null },
+        queryObj: { user_id: id, logout_time: null, is_available: true },
     })
 
     const deviceTokens = loginObjs

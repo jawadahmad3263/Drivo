@@ -93,6 +93,9 @@ let bookingResponse = (req, res, next) => {
 }
 let addPoolMember = async (req, res, next) => {
     try {
+        let bookingObj= await commonHelper.queryRow({
+            model: config.databaseModels.BOOKING,
+            queryObj: {_id:req.body.booking_id}});
         return commonHelper
             .addNew({
                 model: config.databaseModels.POOL_MEMBER,
@@ -104,6 +107,16 @@ let addPoolMember = async (req, res, next) => {
             .then((actionObj) => {
                 req.actionObj = actionObj
                 req.message = 'Your Request has been added'
+                //notify user about member request
+                let notificationObj = {
+                    title:config.notification.title.pool_request,
+                    description: config.notification.pool_request,
+                    notification_by: req.user._id,
+                    notification_for:bookingObj.booker_id,
+                    booking_id:bookingObj._id
+                }
+                req.notificationObj = notificationObj;
+                req.notifyUser=true;
                 return next()
             })
     } catch (error) {
@@ -122,6 +135,23 @@ let acceptRejectPoolMember = async (req, res, next) => {
                 }
             })
             .then((actionObj) => {
+                let notificationObj = {
+                    notification_by: req.user._id,
+                    notification_for:actionObj?.user_id,
+                    booking_id:actionObj?.booking_id
+                }
+                if(req.query.status.toLowerCase()===config.requestStatus[1])
+                notificationObj = {...notificationObj,
+                    title:config.notification.title.pool_member_req_accepted,
+                    description: config.notification.pool_member_req_accepted,
+                }
+                else
+                notificationObj = {...notificationObj,
+                    title:config.notification.title.pool_member_req_cancelled,
+                    description: config.notification.pool_member_req_cancelled,
+                }
+                req.notificationObj = notificationObj;
+                req.notifyUser=true;
                 req.actionObj = actionObj
                 req.message = `pool member ${req.query.status.toLowerCase()} successfully`
                 return next()

@@ -24,8 +24,14 @@ let validatebookingId = (req, res, next) => {
    
     commonLib.validationResponse('User could not be logged in', req, next)
 }
+let validatePoolAcceptRejectParams= (req, res, next) => {
+    req.assert('id', 4015).notEmpty()
+    req.assert('status', 4016).notEmpty()
+    commonLib.validationResponse('User could not be logged in', req, next)
+}
 
 module.exports = {
     validatebookingParams,
-    validatebookingId
+    validatebookingId,
+    validatePoolAcceptRejectParams
 }

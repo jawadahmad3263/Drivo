@@ -46,13 +46,16 @@ module.exports = (app) => {
     passport.authorize([config.userTypes[1]]),
     bookingsMiddleWare.validatebookingId,
     bookingsController.addPoolMember,
+    notificationController.commonNotification,
     bookingsController.commonResponse
   );
   app.put(
     resources + "/pool/accept-reject-member-req",
     authenticateMiddleware,
     passport.authorize([config.userTypes[1]]),
+    bookingsMiddleWare.validatePoolAcceptRejectParams,
     bookingsController.acceptRejectPoolMember,
+    notificationController.commonNotification,
     bookingsController.commonResponse
   );
 }

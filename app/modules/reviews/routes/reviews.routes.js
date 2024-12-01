@@ -4,6 +4,7 @@ const {
     passport,
     authenticateMiddleware,
 } = require('../../../../config/passport')
+const notificationController = require("../../notifications/controller/notifications.controller")
 const config = require("../../../../config/config.json");
 const resources = '/reviews'
 
@@ -15,7 +16,7 @@ module.exports = (app) => {
     reviewsMiddleWare.validateAddReviewParams,
     reviewsController.addNewReview,
     reviewsController.updateOverAllRatings,
-    // notificationController.userReviewedNotification,
+    notificationController.commonNotification,
     reviewsController.reviewResponse
   );
   app.get(

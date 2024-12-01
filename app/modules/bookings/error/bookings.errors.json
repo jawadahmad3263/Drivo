@@ -74,5 +74,15 @@
       "msg": {
         "EN": "please provide pool_members_length"
       }
+    },
+    "4015": {
+      "msg": {
+        "EN": "please provide pool unique id."
+      }
+    },
+    "4016": {
+      "msg": {
+        "EN": "please provide status as accepted or cancelled."
+      }
     }
 }

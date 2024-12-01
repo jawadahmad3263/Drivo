@@ -23,6 +23,16 @@ let addNewReview = async (req, res, next) => {
             })
             .then((addedObj) => {
                 req.reviewObj = addedObj
+                let notificationObj = {
+                    title:config.notification.title.reviewd,
+                    description: config.notification.reviewd,
+                    notification_by: req.user._id,
+                    notification_for:req.body.review_on,
+                    booking_id:req.body.booking_id
+                }
+                
+                req.notificationObj = notificationObj;
+                req.notifyUser=true;
                 req.action = 'Review has been added'
                 next()
             })

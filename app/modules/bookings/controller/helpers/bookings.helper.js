@@ -2,8 +2,9 @@ const config = require('../../../../../config/config.json');
 const commonLib = require('../../../globals/global.library');
 
 function generateBookingResponse(data) {
+    console.log('data?.rider_id', data?.rider_id)
     return {
-        id: data?.id,
+        id: data?._id,
         ride_type: data?.ride_type, // pool/single
         ride_class: data?.ride_class, // business/economy/bike
         status: data?.status,
@@ -42,8 +43,28 @@ function generatePoolMemberResponse(data) {
         updatedAt: data?.updatedAt,
     }
 }   
-
+function generateRiderRequestResponse(data) {
+    return {
+        request_id: data?._id,
+        status: data?.status,
+        demanded_fare: data?.demanded_fare,
+        rider_id: data?.rider_id._id,
+        booking_id:data?.booking_id,
+        profile_image: data?.rider_id?.user_profile?.profile_image
+            ? `${BASE_URL}/${data?.rider_id?.user_profile.profile_image}`
+            : null,
+        firstName: data?.rider_id?.user_profile?.first_name,
+        lastName: data?.rider_id?.user_profile?.last_name,
+        rating: data?.rider_id?.rider_profile?.rating,
+        total_stars: data?.rider_id?.rider_profile?.total_stars,
+        completed_rides: data?.rider_id?.rider_profile?.completed_rides,
+        location: data?.rider_id?.user_location?.location,
+        createdAt: data?.createdAt,
+        updatedAt: data?.updatedAt,
+    }
+}  
 module.exports = {
     generateBookingResponse,
-    generatePoolMemberResponse
+    generatePoolMemberResponse,
+    generateRiderRequestResponse
 }

@@ -3,7 +3,7 @@ const config = require('../../../../config/config.json')
     (commonLib = require('../../globals/global.library')),
     (responseModule = require('../../../../config/response')),
     (usersHelper = require('../../users/controller/helpers/users.helper')),
-    (bookingHelper = require("../controller/helpers/bookings.helper")),
+    (bookingHelper = require('../controller/helpers/bookings.helper')),
     (bcrypt = require('bcryptjs')),
     (_ = require('lodash')),
     (crypto = require('crypto'))
@@ -15,60 +15,64 @@ let addBooking = async (req, res, next) => {
     try {
         let addbookingObj = {
             ride_type: req.body.ride_type.toLowerCase(),
-            ride_class:req.body.ride_class.toLowerCase(),
+            ride_class: req.body.ride_class.toLowerCase(),
             booker_id: req.user._id,
-            estimated_time:parseFloat(req.body.estimated_time),
-            estimated_distince:parseFloat(req.body.estimated_distince),
+            estimated_time: parseFloat(req.body.estimated_time),
+            estimated_distince: parseFloat(req.body.estimated_distince),
             start_location: {
-                type: "Point",
+                type: 'Point',
                 coordinates: [
                     parseFloat(req.body.start_location.lng), // Longitude first
                     parseFloat(req.body.start_location.lat), // Latitude second
                 ],
             },
             end_location: {
-                type: "Point",
+                type: 'Point',
                 coordinates: [
                     parseFloat(req.body.end_location.lng), // Longitude first
                     parseFloat(req.body.end_location.lat), // Latitude second
                 ],
             },
-            total_fare:req.body.total_fare,
+            total_fare: req.body.total_fare,
         }
-        if(req.body.ride_type.toLowerCase()===config.rideTypes[1]){
-        req.body.pool_date = new Date(req.body.pool_date),
-        req.body.pool_date=req.body.pool_date.setUTCHours(0, 0, 0, 0);//as we dont need the time part time have its field
-        addbookingObj ={
-            //pool specific field
-            ...addbookingObj,
-            pool_gender: req.body.pool_gender.toLowerCase(),
-            pool_members_length:parseInt(req.body.pool_members_length),
-            // pool_member_fare:parseFloat(req.body.pool_member_fare),
-            pool_date: req.body.pool_date,
-            pool_time:commonLib.stringTimeToUtcTime(req.body.pool_time)
-        } }
+        if (req.body.ride_type.toLowerCase() === config.rideTypes[1]) {
+            ;(req.body.pool_date = new Date(req.body.pool_date)),
+                (req.body.pool_date = req.body.pool_date.setUTCHours(
+                    0,
+                    0,
+                    0,
+                    0,
+                )) //as we dont need the time part time have its field
+            addbookingObj = {
+                //pool specific field
+                ...addbookingObj,
+                pool_gender: req.body.pool_gender.toLowerCase(),
+                pool_members_length: parseInt(req.body.pool_members_length),
+                // pool_member_fare:parseFloat(req.body.pool_member_fare),
+                pool_date: req.body.pool_date,
+                pool_time: commonLib.stringTimeToUtcTime(req.body.pool_time),
+            }
+        }
         return commonHelper
-        .addNew({
-            model: config.databaseModels.BOOKING,
-            newObj:addbookingObj
-        })
-        .then(async(bookingObj) => {
-            if(req.body.ride_type.toLowerCase()===config.rideTypes[1])
-            await commonHelper
             .addNew({
-                model: config.databaseModels.POOL_MEMBER,
-                newObj:{
-                    booking_id: bookingObj._id,
-                    user_id: req.user._id,
-                    status:config.requestStatus[1],
-                    request_accept_at:Date.now()
-                }
+                model: config.databaseModels.BOOKING,
+                newObj: addbookingObj,
             })
-            req.bookingObj = bookingObj
-            req.message = `New ${req.body.ride_type} request`
-            return next()
-        })
-       
+            .then(async (bookingObj) => {
+                if (req.body.ride_type.toLowerCase() === config.rideTypes[1])
+                    await commonHelper.addNew({
+                        model: config.databaseModels.POOL_MEMBER,
+                        newObj: {
+                            booking_id: bookingObj._id,
+                            user_id: req.user._id,
+                            status: config.requestStatus[1],
+                            request_accept_at: Date.now(),
+                        },
+                    })
+                req.bookingObj = bookingObj
+                req.message = `New ${req.body.ride_type} request`
+                return next()
+            })
     } catch (error) {
         console.log('error', error)
         return res.status(403).send({
@@ -93,30 +97,31 @@ let bookingResponse = (req, res, next) => {
 }
 let addPoolMember = async (req, res, next) => {
     try {
-        let bookingObj= await commonHelper.queryRow({
+        let bookingObj = await commonHelper.queryRow({
             model: config.databaseModels.BOOKING,
-            queryObj: {_id:req.body.booking_id}});
+            queryObj: { _id: req.body.booking_id },
+        })
         return commonHelper
             .addNew({
                 model: config.databaseModels.POOL_MEMBER,
                 newObj: {
                     booking_id: req.body.booking_id,
-                    user_id: req.user._id
-                }
+                    user_id: req.user._id,
+                },
             })
             .then((actionObj) => {
                 req.actionObj = actionObj
                 req.message = 'Your Request has been added'
                 //notify user about member request
                 let notificationObj = {
-                    title:config.notification.title.pool_request,
+                    title: config.notification.title.pool_request,
                     description: config.notification.pool_request,
                     notification_by: req.user._id,
-                    notification_for:bookingObj.booker_id,
-                    booking_id:bookingObj._id
+                    notification_for: bookingObj.booker_id,
+                    booking_id: bookingObj._id,
                 }
-                req.notificationObj = notificationObj;
-                req.notifyUser=true;
+                req.notificationObj = notificationObj
+                req.notifyUser = true
                 return next()
             })
     } catch (error) {
@@ -127,31 +132,37 @@ let addPoolMember = async (req, res, next) => {
 let acceptRejectPoolMember = async (req, res, next) => {
     try {
         return commonHelper
-             .updateRow({
+            .updateRow({
                 model: config.databaseModels.POOL_MEMBER,
-                queryObj:{_id:req.query.id},
-                updatedObj:{
-                    status:req.query.status.toLowerCase()
-                }
+                queryObj: { _id: req.query.id },
+                updatedObj: {
+                    status: req.query.status.toLowerCase(),
+                },
             })
             .then((actionObj) => {
                 let notificationObj = {
                     notification_by: req.user._id,
-                    notification_for:actionObj?.user_id,
-                    booking_id:actionObj?.booking_id
+                    notification_for: actionObj?.user_id,
+                    booking_id: actionObj?.booking_id,
                 }
-                if(req.query.status.toLowerCase()===config.requestStatus[1])
-                notificationObj = {...notificationObj,
-                    title:config.notification.title.pool_member_req_accepted,
-                    description: config.notification.pool_member_req_accepted,
-                }
+                if (req.query.status.toLowerCase() === config.requestStatus[1])
+                    notificationObj = {
+                        ...notificationObj,
+                        title: config.notification.title
+                            .pool_member_req_accepted,
+                        description:
+                            config.notification.pool_member_req_accepted,
+                    }
                 else
-                notificationObj = {...notificationObj,
-                    title:config.notification.title.pool_member_req_cancelled,
-                    description: config.notification.pool_member_req_cancelled,
-                }
-                req.notificationObj = notificationObj;
-                req.notifyUser=true;
+                    notificationObj = {
+                        ...notificationObj,
+                        title: config.notification.title
+                            .pool_member_req_cancelled,
+                        description:
+                            config.notification.pool_member_req_cancelled,
+                    }
+                req.notificationObj = notificationObj
+                req.notifyUser = true
                 req.actionObj = actionObj
                 req.message = `pool member ${req.query.status.toLowerCase()} successfully`
                 return next()
@@ -172,16 +183,14 @@ let commonResponse = (req, res, next) => {
         return next({ msgCode: '0016', status: 403 })
     }
 }
-let getSingleBooking =async (req, res, next) => {
+let getSingleBooking = async (req, res, next) => {
     try {
-        let queryObj;
-        if(!req.query.booking_id){
-          queryObj={
-            //pending 'current
-          }
-        }
-        else
-        {
+        let queryObj
+        if (!req.query.booking_id) {
+            queryObj = {
+                //pending 'current
+            }
+        } else {
             queryObj = { _id: req.query.booking_id }
         }
         const bookingObj = await commonHelper.queryRow({
@@ -191,10 +200,20 @@ let getSingleBooking =async (req, res, next) => {
                 {
                     path: 'rider_id',
                     select: '_id email user_type',
-                    populate: {
-                        path: 'user_profile',
-                        select: 'first_name last_name profile_image',
-                    },
+                    populate: [
+                        {
+                          path: 'user_profile',
+                          select: 'first_name last_name profile_image',
+                        },
+                        {
+                          path: 'rider_profile',
+                          select: 'rating total_stars completed_rides',
+                        },
+                        {
+                            path: 'user_location',
+                            select: 'location',
+                        }
+                    ],
                 },
                 {
                     path: 'booker_id',
@@ -219,7 +238,8 @@ let getSingleBooking =async (req, res, next) => {
             ],
         })
         req.bookingObj = bookingObj
-        req.message = "Single booking details fetched successfully"
+        if(!req.message)
+        req.message = 'Single booking details fetched successfully'
         return next()
     } catch (error) {
         return next({ msgCode: '0016', status: 403 })
@@ -228,34 +248,37 @@ let getSingleBooking =async (req, res, next) => {
 
 let updateBookingStatus = (req, res, next) => {
     try {
-       //On pending yet
+        //On pending yet
 
-        req.message = "Booking updated successfully"
-        if(req.query.status)
-        req.message = `Booking ${req.query.status} successfully`;
-        
+        req.message = 'Booking updated successfully'
+        if (req.query.status)
+            req.message = `Booking ${req.query.status} successfully`
+
         return next()
     } catch (error) {
         return next({ msgCode: '0016', status: 403 })
     }
 }
 
-let getAllBookings =async (req, res, next) => {
+let getAllBookings = async (req, res, next) => {
     try {
-        let { offset, limit, ride_class, booking_status,ride_type,rider_id,user_id } = req.query
+        let {
+            offset,
+            limit,
+            ride_class,
+            booking_status,
+            ride_type,
+            rider_id,
+            user_id,
+        } = req.query
         offset = isNaN(offset) ? DEFAULT_OFFSET : Number(offset)
         limit = isNaN(limit) ? DEFAULT_LIMIT : Number(limit)
         let queryObj = {}
-        if(booking_status)
-        queryObj = {...queryObj,status:booking_status}
-        if(booking_status)
-        queryObj = {...queryObj,ride_class:ride_class}
-        if(ride_type)
-        queryObj = {...queryObj,ride_type:ride_type}
-        if(rider_id)
-        queryObj = {...queryObj,rider_id:rider_id}
-        if(user_id)
-        queryObj = {...queryObj,booker_id:user_id}
+        if (booking_status) queryObj = { ...queryObj, status: booking_status }
+        if (booking_status) queryObj = { ...queryObj, ride_class: ride_class }
+        if (ride_type) queryObj = { ...queryObj, ride_type: ride_type }
+        if (rider_id) queryObj = { ...queryObj, rider_id: rider_id }
+        if (user_id) queryObj = { ...queryObj, booker_id: user_id }
         let bookingCount = await commonHelper.getCount({
             model: config.databaseModels.BOOKING,
             queryObj,
@@ -270,7 +293,7 @@ let getAllBookings =async (req, res, next) => {
                 length: 0,
                 data: [],
             })
-            return commonHelper
+        return commonHelper
             .makeSpecializedQuery({
                 model: config.databaseModels.BOOKING,
                 queryObj: queryObj,
@@ -280,10 +303,20 @@ let getAllBookings =async (req, res, next) => {
                     {
                         path: 'rider_id',
                         select: '_id email user_type',
-                        populate: {
-                            path: 'user_profile',
-                            select: 'first_name last_name profile_image',
-                        },
+                        populate: [
+                            {
+                              path: 'user_profile',
+                              select: 'first_name last_name profile_image',
+                            },
+                            {
+                              path: 'rider_profile',
+                              select: 'rating total_stars completed_rides',
+                            },
+                            {
+                                path: 'user_location',
+                                select: 'location',
+                            }
+                        ],
                     },
                     {
                         path: 'booker_id',
@@ -310,7 +343,7 @@ let getAllBookings =async (req, res, next) => {
             .then((bookingsList) => {
                 let data = []
                 bookingsList?.forEach(function (doc) {
-                    data.push( bookingHelper.generateBookingResponse(doc))
+                    data.push(bookingHelper.generateBookingResponse(doc))
                 })
                 return responseModule.successResponse(res, {
                     success: 1,
@@ -325,6 +358,157 @@ let getAllBookings =async (req, res, next) => {
         return next({ msgCode: '0016', status: 403 })
     }
 }
+let addRiderRequest = async (req, res, next) => {
+    try {
+        let bookingObj = await commonHelper.queryRow({
+            model: config.databaseModels.BOOKING,
+            queryObj: { _id: req.body.booking_id },
+        })
+        const prevousRequest = await commonHelper.queryRow({
+            model: config.databaseModels.RIDER_REQUEST,
+            queryObj: {booking_id: req.body.booking_id,rider_id:req.user._id,status:config.requestStatus[0]}
+        })
+        if(prevousRequest)
+        await commonHelper
+        .updateRow({
+            model: config.databaseModels.RIDER_REQUEST,
+            queryObj: { _id: prevousRequest._id },
+            updatedObj: {
+                status: config.requestStatus[2],
+            },
+        })
+        if(bookingObj.status === config.bookingStatus[0]) {
+            return commonHelper
+                .addNew({
+                    model: config.databaseModels.RIDER_REQUEST,
+                    newObj: {
+                        booking_id: req.body.booking_id,
+                        rider_id:req.user._id,
+                        demanded_fare:parseFloat(req.body.demanded_fare)||bookingObj.total_fare
+                    },
+                })
+                .then((actionObj) => {
+                    req.actionObj = actionObj
+                    req.message = 'Your Request has been added'
+                    //notify user about rider request
+                    let notificationObj = {
+                        title: config.notification.title.RIDER_REQUEST,
+                        description: config.notification.RIDER_REQUEST,
+                        notification_by: req.user._id,
+                        notification_for: bookingObj.booker_id,
+                        booking_id: bookingObj._id,
+                    }
+                    req.notificationObj = notificationObj
+                    req.notifyUser = true
+                    return next()
+                })
+        } else {
+            return responseModule.successResponse(res, {
+                success: 1,
+                message: `Sorry this booking is recently ${bookingObj.status}`,
+            })
+        }
+    } catch (error) {
+        console.log('error', error)
+        return next({ msgCode: '0015', status: 403 })
+    }
+}
+let allRiderRequest= async (req, res, next) => {
+    try { 
+        let requestsCount = await commonHelper.getCount({
+            model: config.databaseModels.RIDER_REQUEST,
+            queryObj:{ booking_id: req.query.booking_id,status:config.requestStatus[0]},
+        })
+
+        if (!requestsCount)
+            return responseModule.successResponse(res, {
+                success: 1,
+                message: 'No request yet',
+                length: 0,
+                data: [],
+            })
+            return commonHelper
+            .querySelectedRows({
+                model: config.databaseModels.RIDER_REQUEST,
+                queryObj: { booking_id: req.query.booking_id,status:config.requestStatus[0]},
+                sortByObj: { createdAt: -1 },
+                populatedObj: [
+                    {
+                      path: 'rider_id',
+                      select: '_id email user_type',
+                      populate: [
+                        {
+                          path: 'user_profile',
+                          select: 'first_name last_name profile_image',
+                        },
+                        {
+                          path: 'rider_profile',
+                          select: 'rating total_stars completed_rides',
+                        },
+                        {
+                            path: 'user_location',
+                            select: 'location',
+                        }
+                      ],
+                    },
+                  ]
+            })
+            .then((requestList) => {
+                let data = []
+                requestList?.forEach(function (doc) {
+                    data.push(
+                        bookingHelper.generateRiderRequestResponse(doc),
+                    )
+                })
+                responseModule.successResponse(res, {
+                    success: 1,
+                    message: 'Rider request refreshed successfully',
+                    data: data,
+                })
+            })    
+     } catch (error) {
+        return next({ msgCode: '0016', status: 403 })
+    }
+}
+let acceptRiderRequest = async (req, res, next) => {
+    try {
+        let riderReq = await commonHelper.queryRow({
+            model: config.databaseModels.RIDER_REQUEST,
+            queryObj: {_id: req.query.request_id}
+        })
+        if(riderReq.status===config.requestStatus[2])
+        return next({ msgCode: 4017, status: 403 })
+        const updatedRiderRequest = await commonHelper.updateRow({
+            model: config.databaseModels.RIDER_REQUEST,
+            queryObj: {_id: req.query.request_id},
+            updatedObj: {status:config.requestStatus[1]},
+        })
+        req.updatedRiderRequest = updatedRiderRequest
+        const updatedBooking = await commonHelper.updateRow({
+            model: config.databaseModels.BOOKING,
+            queryObj: {_id: riderReq.booking_id},
+            updatedObj: {
+                status:config.bookingStatus[1],
+                rider_id:riderReq.rider_id,
+                total_fare:riderReq?.demanded_fare
+            },
+        })
+        let notificationObj = {
+            title: config.notification.title.RIDE_REQ_ACCEPT,
+            description: config.notification.RIDE_REQ_ACCEPT,
+            notification_by: req.user._id,
+            notification_for: riderReq.rider_id,
+            booking_id: riderReq.booking_id,
+        }
+        req.notificationObj = notificationObj
+        req.notifyUser = true
+        req.query.booking_id = riderReq.booking_id;
+        req.message = "Rider request accepted. rider will soon be at your pickup be on time"
+        return next()
+    } catch (error) {
+        return next({ msgCode: '0014', status: 403 })
+    }
+}
 module.exports = {
     addBooking,
     bookingResponse,
@@ -333,5 +517,8 @@ module.exports = {
     getAllBookings,
     addPoolMember,
     commonResponse,
-    acceptRejectPoolMember
+    acceptRejectPoolMember,
+    addRiderRequest,
+    allRiderRequest,
+    acceptRiderRequest
 }

@@ -11,7 +11,8 @@
         "NOTIFICATION":"notification",
         "POOL_MEMBER":"pool_members",
         "FARE_ESTIMATION":"fare_estimation",
-        "USER_LOCATION":"user_location"
+        "USER_LOCATION":"user_location",
+        "RIDER_REQUEST":"rider_request"
     },
     "notification": {
         "ride_request": "You have a new {{ride}} request!",
@@ -24,6 +25,8 @@
         "pool_request":"New user request to add in your pool ride",
         "pool_member_req_cancelled":"Sorry! your request has been cancelled. Try another one",
         "pool_member_req_accepted":"Your request has been accepted.",
+        "RIDER_REQUEST":"New rider request for your ride",
+        "RIDE_REQ_ACCEPT":"Congrats! you have been selected for a ride you requested. Have a safe journey",
         "title": {
           "ride_request": "{{ride}} Request",
           "accepted": "ride Accepted",
@@ -33,7 +36,9 @@
           "message": "Received message",
           "pool_request":"Pool member request",
           "pool_member_req_cancelled":"Pool request cancelled",
-          "pool_member_req_accepted":"Pool request accepted"
+          "pool_member_req_accepted":"Pool request accepted",
+          "RIDER_REQUEST":"Rider request",
+          "RIDE_REQ_ACCEPT":"Ride request accepted"
         }
       },
     "userTypes": [

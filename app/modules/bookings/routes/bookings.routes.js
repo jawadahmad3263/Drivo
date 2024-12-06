@@ -58,4 +58,30 @@ module.exports = (app) => {
     notificationController.commonNotification,
     bookingsController.commonResponse
   );
+  app.post(
+    resources + "/rider-request",
+    authenticateMiddleware,
+    passport.authorize([config.userTypes[2]]),
+    bookingsMiddleWare.validatebookingId,
+    bookingsController.addRiderRequest,
+    notificationController.commonNotification,
+    bookingsController.commonResponse
+  );
+  app.get(
+    resources + "/all-rider-request",
+    authenticateMiddleware,
+    passport.authorize([config.userTypes[1]]),
+    bookingsMiddleWare.validatebookingId,
+    bookingsController.allRiderRequest
+  );
+  app.put(
+    resources + "/accept-rider-request",
+    authenticateMiddleware,
+    passport.authorize([config.userTypes[1]]),
+    bookingsMiddleWare.validateRiderReqId,
+    bookingsController.acceptRiderRequest,
+    notificationController.commonNotification,
+    bookingsController.getSingleBooking,
+    bookingsController.bookingResponse
+  );
 }

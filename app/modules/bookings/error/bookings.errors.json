@@ -84,5 +84,15 @@
       "msg": {
         "EN": "please provide status as accepted or cancelled."
       }
+    },
+    "4017": {
+      "msg": {
+        "EN": "Sorry try another rider request given has recently cancelled."
+      }
+    },
+    "4018": {
+      "msg": {
+        "EN": "please provide request id."
+      }
     }
 }

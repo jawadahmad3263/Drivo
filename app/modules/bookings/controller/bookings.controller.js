@@ -202,17 +202,17 @@ let getSingleBooking = async (req, res, next) => {
                     select: '_id email user_type',
                     populate: [
                         {
-                          path: 'user_profile',
-                          select: 'first_name last_name profile_image',
+                            path: 'user_profile',
+                            select: 'first_name last_name profile_image',
                         },
                         {
-                          path: 'rider_profile',
-                          select: 'rating total_stars completed_rides',
+                            path: 'rider_profile',
+                            select: 'rating total_stars completed_rides',
                         },
                         {
                             path: 'user_location',
                             select: 'location',
-                        }
+                        },
                     ],
                 },
                 {
@@ -238,8 +238,8 @@ let getSingleBooking = async (req, res, next) => {
             ],
         })
         req.bookingObj = bookingObj
-        if(!req.message)
-        req.message = 'Single booking details fetched successfully'
+        if (!req.message)
+            req.message = 'Single booking details fetched successfully'
         return next()
     } catch (error) {
         return next({ msgCode: '0016', status: 403 })
@@ -305,17 +305,17 @@ let getAllBookings = async (req, res, next) => {
                         select: '_id email user_type',
                         populate: [
                             {
-                              path: 'user_profile',
-                              select: 'first_name last_name profile_image',
+                                path: 'user_profile',
+                                select: 'first_name last_name profile_image',
                             },
                             {
-                              path: 'rider_profile',
-                              select: 'rating total_stars completed_rides',
+                                path: 'rider_profile',
+                                select: 'rating total_stars completed_rides',
                             },
                             {
                                 path: 'user_location',
                                 select: 'location',
-                            }
+                            },
                         ],
                     },
                     {
@@ -366,25 +366,30 @@ let addRiderRequest = async (req, res, next) => {
         })
         const prevousRequest = await commonHelper.queryRow({
             model: config.databaseModels.RIDER_REQUEST,
-            queryObj: {booking_id: req.body.booking_id,rider_id:req.user._id,status:config.requestStatus[0]}
-        })
-        if(prevousRequest)
-        await commonHelper
-        .updateRow({
-            model: config.databaseModels.RIDER_REQUEST,
-            queryObj: { _id: prevousRequest._id },
-            updatedObj: {
-                status: config.requestStatus[2],
+            queryObj: {
+                booking_id: req.body.booking_id,
+                rider_id: req.user._id,
+                status: config.requestStatus[0],
             },
         })
-        if(bookingObj.status === config.bookingStatus[0]) {
+        if (prevousRequest)
+            await commonHelper.updateRow({
+                model: config.databaseModels.RIDER_REQUEST,
+                queryObj: { _id: prevousRequest._id },
+                updatedObj: {
+                    status: config.requestStatus[2],
+                },
+            })
+        if (bookingObj.status === config.bookingStatus[0]) {
             return commonHelper
                 .addNew({
                     model: config.databaseModels.RIDER_REQUEST,
                     newObj: {
                         booking_id: req.body.booking_id,
-                        rider_id:req.user._id,
-                        demanded_fare:parseFloat(req.body.demanded_fare)||bookingObj.total_fare
+                        rider_id: req.user._id,
+                        demanded_fare:
+                            parseFloat(req.body.demanded_fare) ||
+                            bookingObj.total_fare,
                     },
                 })
                 .then((actionObj) => {
@@ -413,11 +418,14 @@ let addRiderRequest = async (req, res, next) => {
         return next({ msgCode: '0015', status: 403 })
     }
 }
-let allRiderRequest= async (req, res, next) => {
-    try { 
+let allRiderRequest = async (req, res, next) => {
+    try {
         let requestsCount = await commonHelper.getCount({
             model: config.databaseModels.RIDER_REQUEST,
-            queryObj:{ booking_id: req.query.booking_id,status:config.requestStatus[0]},
+            queryObj: {
+                booking_id: req.query.booking_id,
+                status: config.requestStatus[0],
+            },
         })
 
         if (!requestsCount)
@@ -427,46 +435,47 @@ let allRiderRequest= async (req, res, next) => {
                 length: 0,
                 data: [],
             })
-            return commonHelper
+        return commonHelper
             .querySelectedRows({
                 model: config.databaseModels.RIDER_REQUEST,
-                queryObj: { booking_id: req.query.booking_id,status:config.requestStatus[0]},
+                queryObj: {
+                    booking_id: req.query.booking_id,
+                    status: config.requestStatus[0],
+                },
                 sortByObj: { createdAt: -1 },
                 populatedObj: [
                     {
-                      path: 'rider_id',
-                      select: '_id email user_type',
-                      populate: [
-                        {
-                          path: 'user_profile',
-                          select: 'first_name last_name profile_image',
-                        },
-                        {
-                          path: 'rider_profile',
-                          select: 'rating total_stars completed_rides',
-                        },
-                        {
-                            path: 'user_location',
-                            select: 'location',
-                        }
-                      ],
+                        path: 'rider_id',
+                        select: '_id email user_type',
+                        populate: [
+                            {
+                                path: 'user_profile',
+                                select: 'first_name last_name profile_image',
+                            },
+                            {
+                                path: 'rider_profile',
+                                select: 'rating total_stars completed_rides',
+                            },
+                            {
+                                path: 'user_location',
+                                select: 'location',
+                            },
+                        ],
                     },
-                  ]
+                ],
             })
             .then((requestList) => {
                 let data = []
                 requestList?.forEach(function (doc) {
-                    data.push(
-                        bookingHelper.generateRiderRequestResponse(doc),
-                    )
+                    data.push(bookingHelper.generateRiderRequestResponse(doc))
                 })
                 responseModule.successResponse(res, {
                     success: 1,
                     message: 'Rider request refreshed successfully',
                     data: data,
                 })
-            })    
-     } catch (error) {
+            })
+    } catch (error) {
         return next({ msgCode: '0016', status: 403 })
     }
 }
@@ -474,23 +483,23 @@ let acceptRiderRequest = async (req, res, next) => {
     try {
         let riderReq = await commonHelper.queryRow({
             model: config.databaseModels.RIDER_REQUEST,
-            queryObj: {_id: req.query.request_id}
+            queryObj: { _id: req.query.request_id },
         })
-        if(riderReq.status===config.requestStatus[2])
-        return next({ msgCode: 4017, status: 403 })
+        if (riderReq.status === config.requestStatus[2])
+            return next({ msgCode: 4017, status: 403 })
         const updatedRiderRequest = await commonHelper.updateRow({
             model: config.databaseModels.RIDER_REQUEST,
-            queryObj: {_id: req.query.request_id},
-            updatedObj: {status:config.requestStatus[1]},
+            queryObj: { _id: req.query.request_id },
+            updatedObj: { status: config.requestStatus[1] },
         })
         req.updatedRiderRequest = updatedRiderRequest
         const updatedBooking = await commonHelper.updateRow({
             model: config.databaseModels.BOOKING,
-            queryObj: {_id: riderReq.booking_id},
+            queryObj: { _id: riderReq.booking_id },
             updatedObj: {
-                status:config.bookingStatus[1],
-                rider_id:riderReq.rider_id,
-                total_fare:riderReq?.demanded_fare
+                status: config.bookingStatus[1],
+                rider_id: riderReq.rider_id,
+                total_fare: riderReq?.demanded_fare,
             },
         })
         let notificationObj = {
@@ -502,11 +511,120 @@ let acceptRiderRequest = async (req, res, next) => {
         }
         req.notificationObj = notificationObj
         req.notifyUser = true
-        req.query.booking_id = riderReq.booking_id;
-        req.message = "Rider request accepted. rider will soon be at your pickup be on time"
+        req.query.booking_id = riderReq.booking_id
+        req.message =
+            'Rider request accepted. rider will soon be at your pickup be on time'
         return next()
     } catch (error) {
         return next({ msgCode: '0014', status: 403 })
+    }
+}
+
+let getPoolList = async (req, res, next) => {
+    try {
+        let { ride_class, start_location, pool_gender, date, maxDistance } =
+            req.query
+        maxDistance = isNaN(maxDistance) ? 2000 : Number(maxDistance)
+        start_location = JSON.parse(start_location)
+        let queryObj = {
+            ride_type: config.rideTypes[1],
+            status: config.bookingStatus[1],
+        }
+        if (ride_class) queryObj = { ...queryObj, ride_class: ride_class }
+        if (pool_gender) queryObj = { ...queryObj, pool_gender: pool_gender }
+        if (!start_location) {
+            return next({ msgCode: 4019, status: 403 })
+        }
+
+        queryObj = {
+            ...queryObj,
+            start_location: {
+                $nearSphere: {
+                    $geometry: {
+                        type: 'Point',
+                        coordinates: [
+                            parseFloat(start_location.lng),
+                            parseFloat(start_location.lat),
+                        ],
+                    },
+                    $maxDistance: maxDistance, // Maximum radius in meters
+                },
+            },
+        }
+        if (date) {
+            queryObj = {
+                ...queryObj,
+                $expr: {
+                    $eq: [
+                        {
+                            $dateToString: {
+                                format: '%Y-%m-%d',
+                                date: '$pool_date',
+                            },
+                        },
+                        date.split('T')[0],
+                    ],
+                },
+            }
+        }
+        return commonHelper
+            .makeSpecializedQuery({
+                model: config.databaseModels.BOOKING,
+                queryObj: queryObj,
+                populatedObj: [
+                    {
+                        path: 'rider_id',
+                        select: '_id email user_type',
+                        populate: [
+                            {
+                                path: 'user_profile',
+                                select: 'first_name last_name profile_image',
+                            },
+                            {
+                                path: 'rider_profile',
+                                select: 'rating total_stars completed_rides',
+                            },
+                            {
+                                path: 'user_location',
+                                select: 'location',
+                            },
+                        ],
+                    },
+                    {
+                        path: 'booker_id',
+                        select: '_id email user_type',
+                        populate: {
+                            path: 'user_profile',
+                            select: 'first_name last_name profile_image',
+                        },
+                    },
+                    {
+                        path: 'pool_members',
+                        select: '_id individual_fare status',
+                        populate: {
+                            path: 'user_id',
+                            select: '_id email user_type',
+                            populate: {
+                                path: 'user_profile',
+                                select: 'first_name last_name profile_image',
+                            },
+                        },
+                    },
+                ],
+            })
+            .then((poolList) => {
+                let data = []
+                poolList?.forEach(function (doc) {
+                    data.push(bookingHelper.generateBookingResponse(doc))
+                })
+                responseModule.successResponse(res, {
+                    success: 1,
+                    message: 'pool list fetched successfully',
+                    data: data,
+                })
+            })
+    } catch (error) {
+        return next({ msgCode: '0016', status: 403 })
     }
 }
 module.exports = {
@@ -520,5 +638,6 @@ module.exports = {
     acceptRejectPoolMember,
     addRiderRequest,
     allRiderRequest,
-    acceptRiderRequest
+    acceptRiderRequest,
+    getPoolList,
 }

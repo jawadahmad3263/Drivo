@@ -2,7 +2,6 @@ const config = require('../../../../../config/config.json');
 const commonLib = require('../../../globals/global.library');
 
 function generateBookingResponse(data) {
-    console.log('data?.rider_id', data?.rider_id)
     return {
         id: data?._id,
         ride_type: data?.ride_type, // pool/single

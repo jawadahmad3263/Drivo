@@ -84,4 +84,9 @@ module.exports = (app) => {
     bookingsController.getSingleBooking,
     bookingsController.bookingResponse
   );
+  app.get(
+    resources + "/search-pool-list",
+    authenticateMiddleware,
+    bookingsController.getPoolList
+  );
 }

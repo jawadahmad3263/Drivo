@@ -94,5 +94,10 @@
       "msg": {
         "EN": "please provide request id."
       }
+    },
+    "4019": {
+      "msg": {
+        "EN": "Invalid start or end location coordinates."
+      }
     }
 }

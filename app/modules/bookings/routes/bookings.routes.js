@@ -32,6 +32,7 @@ module.exports = (app) => {
     resources,
     authenticateMiddleware,
     bookingsController.updateBookingStatus,
+    notificationController.commonNotification,
     bookingsController.bookingResponse
   );
   //get all bookings list

@@ -246,14 +246,59 @@ let getSingleBooking = async (req, res, next) => {
     }
 }
 
-let updateBookingStatus = (req, res, next) => {
+let updateBookingStatus =async (req, res, next) => {
     try {
-        //On pending yet
-
-        req.message = 'Booking updated successfully'
-        if (req.query.status)
-            req.message = `Booking ${req.query.status} successfully`
-
+        let updates = {
+            status: config.bookingStatus[parseInt(req.query.status)],
+        }
+        if(parseInt(req.query.status)==2){
+            updates =  { ...updates,
+                 ride_cancelled_at:Date.now(),
+                 ride_cancelled_by:req.user._id
+                }
+        }
+        const updatedBooking = await commonHelper.updateRow({
+            model: config.databaseModels.BOOKING,
+            queryObj: { _id: req.query.booking_id },
+            updatedObj:updates,
+        })
+        let notificationObj;
+        if(parseInt(req.query.status)==3){
+            notificationObj = {
+                title: config.notification.title.completed,
+                description: config.notification.completed,
+                notification_by: req.user._id,
+                notification_for: updatedBooking.booker_id,
+                booking_id:req.query.booking_id,
+            }
+            req.notificationObj = notificationObj
+            req.notifyUser = true
+        }
+        if(parseInt(req.query.status)==2){
+            notificationObj = {
+                title: config.notification.title.declined,
+                description: config.notification.declined,
+                booking_id:req.query.booking_id,
+            }
+            if (req.user._id.toString() === updatedBooking.booker_id.toString()) 
+            notificationObj = {
+                ...notificationObj,
+                notification_by: req.user._id,
+                notification_for: updatedBooking?.rider_id,
+            }
+            else
+            notificationObj = {
+                ...notificationObj,
+                notification_by: req.user._id,
+                notification_for: updatedBooking?.booker_id,
+            }
+            req.notificationObj = notificationObj
+            req.notifyUser = true
+        }
+        
+       
+        req.message = `Booking ${config.bookingStatus[parseInt(req.query.status)]} successfully`
+        req.bookingObj = updatedBooking
         return next()
     } catch (error) {
         return next({ msgCode: '0016', status: 403 })
